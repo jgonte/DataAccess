@@ -37,6 +37,11 @@ namespace DataAccess
 
                 foreach (var pa in ta.PropertyAccessors.Values.Where(a => a.IsPrimitive))
                 {
+                    if (r.PropertyMap.IsIgnored(pa.PropertyName))
+                    {
+                        continue; // Do nothing
+                    }
+
                     if (pa.CanSet) // Can set the value in the property of the object
                     {
                         var i = r.PropertyMap.GetIndex(pa.PropertyName);
@@ -45,13 +50,6 @@ namespace DataAccess
                         {
                             continue;
                         }
-
-                        if (r.PropertyMap.IsIgnored(pa.PropertyName))
-                        {
-                            continue; // Do nothing
-                        }
-
-                        i = r.PropertyMap.GetIndex(pa.PropertyName);
 
                         object value = reader.IsDBNull(i) ? null : reader[i];
 

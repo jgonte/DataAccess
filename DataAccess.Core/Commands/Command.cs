@@ -56,6 +56,11 @@ namespace DataAccess
         internal int? _timeout;
 
         /// <summary>
+        /// Action to execute before the command has been executed
+        /// </summary>
+        internal Action _onBeforeCommandExecuted;
+
+        /// <summary>
         /// Action to execute when the command has been executed
         /// </summary>
         internal Action _onAfterCommandExecuted;
@@ -67,6 +72,8 @@ namespace DataAccess
         /// <returns></returns>
         internal int ExecuteCommand(Context context = null)
         {
+            _onBeforeCommandExecuted?.Invoke(); // Set any values before gnenerating the parameters
+
             if (_autoGenerateParameters)
             {
                 GenerateParameters();
@@ -97,6 +104,8 @@ namespace DataAccess
 
         internal async Task<int> ExecuteCommandAsync(Context context = null)
         {
+            _onBeforeCommandExecuted?.Invoke(); // Set any values before gnenerating the parameters
+
             if (_autoGenerateParameters)
             {
                 GenerateParameters();
@@ -148,7 +157,8 @@ namespace DataAccess
                 _excludedPropertiesInParametersGeneration = new string[] { };
             }
 
-            foreach (var pa in ta.PropertyAccessors.Values.Where(a => a.IsPrimitive &&
+            foreach (var pa in ta.PropertyAccessors.Values
+                .Where(a => a.IsPrimitive &&
                 !_excludedPropertiesInParametersGeneration.Contains(a.PropertyName)))
             {
                 if (pa.CanGet) // Can get the value in the property of the object

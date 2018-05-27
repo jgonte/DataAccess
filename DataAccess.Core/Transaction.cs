@@ -178,7 +178,6 @@ namespace DataAccess
                         command.ExecuteCommand(new Context
                         {
                             Connection = connection,
-
                             Transaction = transaction
                         });
                     }
