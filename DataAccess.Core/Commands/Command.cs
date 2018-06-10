@@ -72,7 +72,7 @@ namespace DataAccess
         /// <returns></returns>
         internal int ExecuteCommand(Context context = null)
         {
-            _onBeforeCommandExecuted?.Invoke(); // Set any values before gnenerating the parameters
+            _onBeforeCommandExecuted?.Invoke(); // Set any values before generating the parameters
 
             if (_autoGenerateParameters)
             {
