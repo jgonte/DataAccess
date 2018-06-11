@@ -28,12 +28,12 @@ namespace DataAccess.Tests
         [ClassInitialize()]
         public static async Task MyClassInitialize(TestContext testContext)
         {
-            //CreateDatabase();
+            CreateDatabase();
 
-            //CreateStoredProcedures();
+            CreateStoredProcedures();
 
             // If there are no records then create them
-            //await SeedData();
+            await SeedData();
         }
 
         private static async Task SeedData()
@@ -148,37 +148,37 @@ GO
 USE [PersonCustomerEmployeeExecutive]
 GO
 
-CREATE TABLE [Person](
-    [PersonId] INT,
-    [Name] VARCHAR(50)
+CREATE TABLE [PersonCustomerEmployeeExecutive]..[Person](
+    [PersonId] INT NOT NULL IDENTITY,
+    [Name] VARCHAR(50) NOT NULL
     CONSTRAINT Person_PK PRIMARY KEY ([PersonId])
 );
 
-CREATE TABLE [Customer](
+CREATE TABLE [PersonCustomerEmployeeExecutive]..[Customer](
     [Rating] INT,
     [CustomerId] INT
     CONSTRAINT Customer_PK PRIMARY KEY ([CustomerId])
 );
 
-CREATE TABLE [Employee](
-    [Salary] DECIMAL(6, 2),
+CREATE TABLE [PersonCustomerEmployeeExecutive]..[Employee](
+    [Salary] DECIMAL(9, 2),
     [EmployeeId] INT
     CONSTRAINT Employee_PK PRIMARY KEY ([EmployeeId])
 );
 
-CREATE TABLE [Executive](
-    [Bonus] DECIMAL(6, 2),
+CREATE TABLE [PersonCustomerEmployeeExecutive]..[Executive](
+    [Bonus] DECIMAL(9, 2),
     [ExecutiveId] INT
     CONSTRAINT Executive_PK PRIMARY KEY ([ExecutiveId])
 );
 
-ALTER TABLE [Customer]
+ALTER TABLE [PersonCustomerEmployeeExecutive]..[Customer]
     ADD CONSTRAINT Customer_Person_IFK FOREIGN KEY ([CustomerId]) REFERENCES [Person] ([PersonId]);
 
-ALTER TABLE [Employee]
+ALTER TABLE [PersonCustomerEmployeeExecutive]..[Employee]
     ADD CONSTRAINT Employee_Person_IFK FOREIGN KEY ([EmployeeId]) REFERENCES [Person] ([PersonId]);
 
-ALTER TABLE [Executive]
+ALTER TABLE [PersonCustomerEmployeeExecutive]..[Executive]
     ADD CONSTRAINT Executive_Employee_IFK FOREIGN KEY ([ExecutiveId]) REFERENCES [Employee] ([EmployeeId]);
 
 ",
@@ -244,7 +244,7 @@ GO
 
 CREATE PROCEDURE [pEmployee_Create]
     @name VARCHAR(50),
-    @salary DECIMAL(6, 2)
+    @salary DECIMAL(9, 2)
 AS
 BEGIN
     DECLARE @outputData TABLE
@@ -298,8 +298,8 @@ GO
 
 CREATE PROCEDURE [pExecutive_Create]
     @name VARCHAR(50),
-    @salary DECIMAL(6, 2),
-    @bonus DECIMAL(6, 2)
+    @salary DECIMAL(9, 2),
+    @bonus DECIMAL(9, 2)
 AS
 BEGIN
     DECLARE @outputData TABLE

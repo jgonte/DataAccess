@@ -49,7 +49,7 @@ namespace DataAccess.Tests
         //
         #endregion
 
-        internal class Message
+        class Message
         {
             public int MessageId { get; set; }
 
