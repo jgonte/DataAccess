@@ -161,7 +161,7 @@ namespace DataAccess
             return command;
         }
 
-        public static T OnBeforeCommandExecuted<T>(this T command, Action onBeforeCommandExecuted)
+        public static T OnBeforeCommandExecuted<T>(this T command, Action<Command> onBeforeCommandExecuted)
             where T : Command
         {
             command._onBeforeCommandExecuted = onBeforeCommandExecuted;

@@ -58,7 +58,7 @@ namespace DataAccess
         /// <summary>
         /// Action to execute before the command has been executed
         /// </summary>
-        internal Action _onBeforeCommandExecuted;
+        internal Action<Command> _onBeforeCommandExecuted;
 
         /// <summary>
         /// Action to execute when the command has been executed
@@ -72,7 +72,7 @@ namespace DataAccess
         /// <returns></returns>
         internal int ExecuteCommand(Context context = null)
         {
-            _onBeforeCommandExecuted?.Invoke(); // Set any values before generating the parameters
+            _onBeforeCommandExecuted?.Invoke(this); // Set any values before generating the parameters
 
             if (_autoGenerateParameters)
             {
@@ -104,7 +104,7 @@ namespace DataAccess
 
         internal async Task<int> ExecuteCommandAsync(Context context = null)
         {
-            _onBeforeCommandExecuted?.Invoke(); // Set any values before gnenerating the parameters
+            _onBeforeCommandExecuted?.Invoke(this); // Set any values before gnenerating the parameters
 
             if (_autoGenerateParameters)
             {
