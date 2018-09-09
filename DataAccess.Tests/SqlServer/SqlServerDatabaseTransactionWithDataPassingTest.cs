@@ -192,8 +192,6 @@ GO
             public int? Id { get; set; }
 
             public string Name { get; set; }
-
-            public Address Address { get; set; }
         }
 
         internal class Address
@@ -210,11 +208,12 @@ GO
         {
             var school = new School
             {
-                Name = "MySchool",
-                Address = new Address
-                {
-                    StreetAddress = "123 Main St."
-                }
+                Name = "MySchool"
+            };
+
+            var address = new Address
+            {
+                StreetAddress = "123 Main St."
             };
 
             var linkAddressCommand = Command.NonQuery() // Link the school to the address
@@ -239,25 +238,25 @@ GO
                         )
                         .Instance(school)
                         .MapProperties(
-                            pm => pm.Map(s => s.Id)//.Index(0)
+                            pm => pm.Map<School>(s => s.Id)//.Index(0)
                         ),
 
                     Query<Address> // Create the address after
                         .Single()
                         .StoredProcedure("p_Address_Create")
                         .Parameters(
-                            p => p.Name("streetAddress").Value(school.Address.StreetAddress)
+                            p => p.Name("streetAddress").Value(address.StreetAddress)
                         )
-                        .Instance(school.Address)
+                        .Instance(address)
                         .MapProperties(
-                            pm => pm.Map(a => a.Id)//.Index(0)
+                            pm => pm.Map<Address>(a => a.Id)//.Index(0)
                         )
                         .OnAfterCommandExecuted(() =>
                         {
                             // Now it is the time to set the parameters
                             linkAddressCommand.Parameters(
                                 p => p.Name("schoolId").Value(school.Id),
-                                p => p.Name("addressId").Value(school.Address.Id)
+                                p => p.Name("addressId").Value(address.Id)
                             );
                         }),
 
@@ -280,10 +279,10 @@ GO
                     schoolResultSet,
                     addressResultSet
                 )
-                .OnAfterCommandExecuted(() => // Set the address of the school
-                {
-                    schoolResultSet.Data.Address = addressResultSet.Data;
-                })
+                //.OnAfterCommandExecuted(() => // Set the address of the school
+                //{
+                //    schoolResultSet.Data.Address = addressResultSet.Data;
+                //})
                 .ExecuteAsync();
 
             var fetchedSchool = schoolResultSet.Data;
@@ -298,7 +297,7 @@ GO
 
             Assert.AreEqual("123 Main St.", fetchedAddress.StreetAddress);
 
-            Assert.AreEqual(fetchedAddress, fetchedSchool.Address);
+            //Assert.AreEqual(fetchedAddress, fetchedSchool.Address);
         }
     }
 }

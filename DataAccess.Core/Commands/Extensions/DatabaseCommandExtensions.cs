@@ -169,7 +169,7 @@ namespace DataAccess
             return command;
         }
 
-        public static T OnAfterCommandExecuted<T>(this T command, Action onAfterCommandExecuted)
+        public static T OnAfterCommandExecuted<T>(this T command, Action<Command> onAfterCommandExecuted)
             where T : Command
         {
             command._onAfterCommandExecuted = onAfterCommandExecuted;

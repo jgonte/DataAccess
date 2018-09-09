@@ -17,6 +17,12 @@ namespace DataAccess
         /// <summary>
         /// The map of the properties to the index of the columns of the reader
         /// </summary>
-        PropertyMap<T> PropertyMap { get; set; }
+        PropertyMap PropertyMap { get; set; }
+
+        /// <summary>
+        /// The type map to support polymorphic queries by mapping the type of the item to be created
+        /// to a code (number) retrieved from the query
+        /// </summary>
+        TypeMap TypeMap { get; set; }
     }
 }

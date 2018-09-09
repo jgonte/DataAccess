@@ -12,11 +12,11 @@ namespace DataAccess
 
         public IList<T> Data => ((ICollectionReader<T>)this).Objects;
 
-        TypeMap ICollectionReader<T>.TypeMap { get; set; }
+        TypeMap ITypeReader<T>.TypeMap { get; set; }
 
         Action<DbDataReader, T> ITypeReader<T>.OnRecordRead { get; set; }
 
-        PropertyMap<T> ITypeReader<T>.PropertyMap { get; set; }
+        PropertyMap ITypeReader<T>.PropertyMap { get; set; }
 
         public override int Read(DbDataReader reader)
         {
@@ -44,9 +44,9 @@ namespace DataAccess
         /// </summary>
         /// <param name="mappedProperties"></param>
         /// <returns></returns>
-        public CollectionResultSet<T> MapProperties(params MappedProperty<T>[] mappedProperties)
+        public CollectionResultSet<T> MapProperties(params MappedProperty[] mappedProperties)
         {
-            ((ITypeReader<T>)this).PropertyMap = new PropertyMap<T>(mappedProperties);
+            ((ITypeReader<T>)this).PropertyMap = new PropertyMap(mappedProperties);
 
             return this;
         }
@@ -60,12 +60,12 @@ namespace DataAccess
         /// <param name="reader"></param>
         /// <param name="configures"></param>
         /// <returns></returns>
-        public CollectionResultSet<T> MapProperties(params Action<MappedProperty<T>>[] configures)
+        public CollectionResultSet<T> MapProperties(params Action<MappedProperty>[] configures)
         {
             return MapProperties(configures
                 .Select(configure =>
                 {
-                    var mappedProperty = new MappedProperty<T>();
+                    var mappedProperty = new MappedProperty();
 
                     configure(mappedProperty);
 
@@ -75,42 +75,7 @@ namespace DataAccess
             );
         }
 
-        /// <summary>
-        /// Maps the type of the item to be created to a code (number) retrieved from the query
-        /// to support polymorphic queries
-        /// </summary>
-        /// <param name="typeDiscriminatorIndex"></param>
-        /// <param name="mappedTypes"></param>
-        /// <returns></returns>
-        public CollectionResultSet<T> MapTypes(int typeDiscriminatorIndex, params MappedType[] mappedTypes)
-        {
-            ((ICollectionReader<T>)this).TypeMap = new TypeMap(typeDiscriminatorIndex, mappedTypes);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Maps the type of the item to be created to a code (number) retrieved from the query
-        /// to support polymorphic queries
-        /// </summary>
-        /// <param name="typeDiscriminatorIndex"></param>
-        /// <param name="configures"></param>
-        /// <returns></returns>
-        public CollectionResultSet<T> MapTypes(int typeDiscriminatorIndex, params Action<MappedType>[] configures)
-        {
-            return MapTypes(typeDiscriminatorIndex,
-                configures
-                    .Select(configure =>
-                    {
-                        var mappedType = new MappedType();
-
-                        configure(mappedType);
-
-                        return (mappedType);
-                    })
-                    .ToArray()
-            );
-        }
+        
 
         #endregion
     }

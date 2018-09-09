@@ -14,7 +14,9 @@ namespace DataAccess
     {
         Action<DbDataReader, T> ITypeReader<T>.OnRecordRead { get; set; }
 
-        PropertyMap<T> ITypeReader<T>.PropertyMap { get; set; }
+        PropertyMap ITypeReader<T>.PropertyMap { get; set; }
+
+        TypeMap ITypeReader<T>.TypeMap { get; set; }
 
         protected override int OnExecute(DbCommand command)
         {

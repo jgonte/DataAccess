@@ -456,6 +456,87 @@ BEGIN
 END;
 GO
 
+CREATE PROCEDURE [pPerson_Get]
+    @personId INT
+AS
+BEGIN
+    SELECT
+        _q_.[Id] AS Id,
+        _q_.[Name] AS Name,
+        _q_.[Rating] AS Rating,
+        _q_.[Salary] AS Salary,
+        _q_.[Bonus] AS Bonus,
+        _q_.[_EntityType_] AS _EntityType_
+    FROM 
+    (
+        SELECT
+            c.[CustomerId] AS Id,
+            p.[Name] AS Name,
+            c.[Rating] AS Rating,
+            NULL AS Salary,
+            NULL AS Bonus,
+            1 AS _EntityType_
+        FROM [Customer] c
+        INNER JOIN [Person] p
+            ON c.[CustomerId] = p.[PersonId]
+        UNION ALL
+        (
+            SELECT
+                e.[EmployeeId] AS Id,
+                p.[Name] AS Name,
+                NULL AS Rating,
+                e.[Salary] AS Salary,
+                NULL AS Bonus,
+                2 AS _EntityType_
+            FROM [Employee] e
+            INNER JOIN [Person] p
+                ON e.[EmployeeId] = p.[PersonId]
+            LEFT OUTER JOIN [Executive] e1
+                ON e1.[ExecutiveId] = e.[EmployeeId]
+            WHERE e1.[ExecutiveId] IS NULL
+        )
+        UNION ALL
+        (
+            SELECT
+                e.[ExecutiveId] AS Id,
+                p.[Name] AS Name,
+                NULL AS Rating,
+                e1.[Salary] AS Salary,
+                e.[Bonus] AS Bonus,
+                3 AS _EntityType_
+            FROM [Executive] e
+            INNER JOIN [Employee] e1
+                ON e.[ExecutiveId] = e1.[EmployeeId]
+            INNER JOIN [Person] p
+                ON e1.[EmployeeId] = p.[PersonId]
+        )
+        UNION ALL
+        (
+            SELECT
+                p.[PersonId] AS Id,
+                p.[Name] AS Name,
+                NULL AS Rating,
+                NULL AS Salary,
+                NULL AS Bonus,
+                4 AS _EntityType_
+            FROM [Person] p
+            LEFT OUTER JOIN [Customer] c
+                ON c.[CustomerId] = p.[PersonId]
+            LEFT OUTER JOIN [Employee] e
+                ON e.[EmployeeId] = p.[PersonId]
+            LEFT OUTER JOIN [Executive] e1
+                ON e1.[ExecutiveId] = e.[EmployeeId]
+            WHERE c.[CustomerId] IS NULL
+            AND e.[EmployeeId] IS NULL
+            AND e1.[ExecutiveId] IS NULL
+        )
+    ) _q_
+    WHERE _q_.[Id] = @personId;
+
+END;
+GO
+
+
 ",
                                     "^GO");
         }     
@@ -506,7 +587,7 @@ GO
         }
 
         [TestMethod()]
-        public async Task Polymorphic_Usage_Commands_Test()
+        public async Task Polymorphic_Usage_Collection_With_OnRecordRead_Test()
         {
             var response = await Query<Person>
                 .Collection()
@@ -549,7 +630,7 @@ GO
         }
 
         [TestMethod()]
-        public async Task Polymorphic_Usage_Commands_Property_Map_Test()
+        public async Task Polymorphic_Usage_Collection_Test()
         {
             var response = await Query<Person>
                 .Collection()
@@ -562,11 +643,11 @@ GO
                     tm => tm.Type(typeof(Person))//.Index(4)
                 )
                 .MapProperties(
-                    pm => pm.Map(m => m.Id),//.Index(0), Optional. If not provided they are indexed by the order they appear 
-                    pm => pm.Map(m => m.Name),//.Index(1),
-                    pm => pm.Name("Rating"),//.Index(2),
-                    pm => pm.Name("Salary"),//.Index(3),
-                    pm => pm.Name("Bonus"),//.Index(4),
+                    pm => pm.Map<Person>(m => m.Id),//.Index(0), Optional. If not provided they are indexed by the order they appear 
+                    pm => pm.Map<Person>(m => m.Name),//.Index(1),
+                    pm => pm.Map<Customer>(m => m.Rating),//.Index(2),
+                    pm => pm.Map<Employee>(m => m.Salary),//.Index(3),
+                    pm => pm.Map<Executive>(m => m.Bonus),//.Index(4),
                     pm => pm.Name("ItDoesNotExist")//.Index(5)// Ignored if it does not exist
                 )
                 .ExecuteAsync();
@@ -615,6 +696,44 @@ GO
             Assert.AreEqual(1000000.00m, executive.Bonus);
 
             Assert.AreEqual(7, executive.Id);
+        }
+
+        [TestMethod()]
+        public async Task Polymorphic_Usage_Single_Test()
+        {
+            var response = await Query<Person>
+                .Single()
+                .Connection(connectionName)
+                .StoredProcedure("pPerson_Get")
+                .Parameters(
+                    p => p.Name("personId").Value(5)
+                )
+                .MapTypes(5,
+                    tm => tm.Type(typeof(Customer)),//.Index(1), Optional. If not provided they are indexed by the order they appear 
+                    tm => tm.Type(typeof(Employee)),//.Index(2),
+                    tm => tm.Type(typeof(Executive)),//.Index(3),
+                    tm => tm.Type(typeof(Person))//.Index(4)
+                )
+                .MapProperties(
+                    pm => pm.Map<Person>(m => m.Id),//.Index(0), Optional. If not provided they are indexed by the order they appear 
+                    pm => pm.Map<Person>(m => m.Name),//.Index(1),
+                    pm => pm.Map<Customer>(m => m.Rating),//.Index(2),
+                    pm => pm.Map<Employee>(m => m.Salary),//.Index(3),
+                    pm => pm.Map<Executive>(m => m.Bonus),//.Index(4),
+                    pm => pm.Name("ItDoesNotExist")//.Index(5)// Ignored if it does not exist
+                )
+                .ExecuteAsync();
+
+            var person = response.Data;
+
+            var customer = (Customer)person;
+
+            Assert.AreEqual(5, customer.Id);
+
+            Assert.AreEqual("Dan Rich", customer.Name);
+
+            Assert.AreEqual(5, customer.Rating);
+
         }
     }
 }

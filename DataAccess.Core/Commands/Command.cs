@@ -63,7 +63,7 @@ namespace DataAccess
         /// <summary>
         /// Action to execute when the command has been executed
         /// </summary>
-        internal Action _onAfterCommandExecuted;
+        internal Action<Command> _onAfterCommandExecuted;
 
         /// <summary>
         /// Executes a command
@@ -258,7 +258,7 @@ namespace DataAccess
                     ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
                 }
 
-                _onAfterCommandExecuted?.Invoke();
+                _onAfterCommandExecuted?.Invoke(this);
 
                 return rc;
             }
@@ -298,7 +298,7 @@ namespace DataAccess
                     ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
                 }
 
-                _onAfterCommandExecuted?.Invoke();
+                _onAfterCommandExecuted?.Invoke(this);
 
                 return rc;
             }

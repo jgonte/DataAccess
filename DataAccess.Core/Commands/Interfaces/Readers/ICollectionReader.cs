@@ -12,11 +12,5 @@ namespace DataAccess
         /// The objects populated by this reader
         /// </summary>
         IList<T> Objects { get; set; }
-
-        /// <summary>
-        /// The type map to support polymorphic queries by mapping the type of the item to be created
-        /// to a code (number) retrieved from the query
-        /// </summary>
-        TypeMap TypeMap { get; set; }
     }
 }

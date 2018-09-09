@@ -4,7 +4,7 @@ using Utilities;
 
 namespace DataAccess
 {
-    public class MappedProperty<T>
+    public class MappedProperty
     {
         internal string _name;
 
@@ -12,28 +12,28 @@ namespace DataAccess
 
         internal bool _ignore;
 
-        public MappedProperty<T> Name(string name)
+        public MappedProperty Name(string name)
         {
             _name = name;
 
             return this;
         }
 
-        public MappedProperty<T> Map(Expression<Func<T, object>> expression)
+        public MappedProperty Map<T>(Expression<Func<T, object>> expression)
         {
             _name = expression.GetPropertyName();      
 
             return this;
         }
 
-        public MappedProperty<T> Index(int index)
+        public MappedProperty Index(int index)
         {
             _index = index;
 
             return this;
         }
 
-        public MappedProperty<T> Ignore(bool ignore = true)
+        public MappedProperty Ignore(bool ignore = true)
         {
             _ignore = ignore;
 

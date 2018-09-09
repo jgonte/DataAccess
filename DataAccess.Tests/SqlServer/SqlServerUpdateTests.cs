@@ -197,7 +197,7 @@ VALUES
                 //})
                 .Instance(message)
                 .MapProperties(
-                    pm => pm.Map(m => m.UpdatedDateTime)//.Index(0)
+                    pm => pm.Map<Message>(m => m.UpdatedDateTime)//.Index(0)
                 )
                 .ExecuteAsync();
 
@@ -242,7 +242,7 @@ VALUES
                  )
                 .Instance(message)
                 .MapProperties(
-                    pm => pm.Map(m => m.UpdatedDateTime)//.Index(0)
+                    pm => pm.Map<Message>(m => m.UpdatedDateTime)//.Index(0)
                 )
                 .ExecuteAsync();
 

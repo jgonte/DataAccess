@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using Utilities;
@@ -19,32 +18,44 @@ namespace DataAccess
             {
                 if (r.PropertyMap == null) // Create a map by matching the name of the returned field with the name of the property
                 {
-                    var mappedProperties = new List<MappedProperty<U>>();
+                    var mappedProperties = new List<MappedProperty>();
 
-                    for (var i = 0; i < reader.FieldCount; i++)
+                    for (var i = 0; i < reader.FieldCount; ++i)
                     {
-                        mappedProperties.Add(new MappedProperty<U>
+                        mappedProperties.Add(new MappedProperty
                         {
                             _name = reader.GetName(i),
                             _index = i
                         });
                     }
 
-                    r.PropertyMap = new PropertyMap<U>(mappedProperties.ToArray());
+                    r.PropertyMap = new PropertyMap(mappedProperties.ToArray());
                 }
 
-                var ta = obj.GetTypeAccessor();
+                ReadProperties(reader, r.PropertyMap, obj, null);
+            }
+        }
 
-                foreach (var pa in ta.PropertyAccessors.Values.Where(a => a.IsPrimitive))
+        private static void ReadProperties(DbDataReader reader, PropertyMap propertyMap, object obj, string previousPropertyName)
+        {
+            var ta = obj.GetTypeAccessor();
+
+            foreach (var pa in ta.PropertyAccessors.Values.Where(pa => !pa.PropertyType.IsCollection()))
+            {
+                var propertyName = string.IsNullOrWhiteSpace(previousPropertyName) ? 
+                    pa.PropertyName : 
+                    $"{previousPropertyName}.{pa.PropertyName}";
+
+                if (propertyMap.IsIgnored(propertyName))
                 {
-                    if (r.PropertyMap.IsIgnored(pa.PropertyName))
-                    {
-                        continue; // Do nothing
-                    }
+                    continue; // Do nothing
+                }
 
+                if (pa.IsPrimitive)
+                {
                     if (pa.CanSet) // Can set the value in the property of the object
                     {
-                        var i = r.PropertyMap.GetIndex(pa.PropertyName);
+                        var i = propertyMap.GetIndex(propertyName);
 
                         if (i == -1) // Property no mapped
                         {
@@ -55,6 +66,14 @@ namespace DataAccess
 
                         pa.SetValue(obj, value);
                     }
+                }
+                else // Nested property
+                {
+                    var o = pa.PropertyType.CreateInstance();
+
+                    ReadProperties(reader, propertyMap, o, propertyName);
+
+                    pa.SetValue(obj, o);
                 }
             }
         }

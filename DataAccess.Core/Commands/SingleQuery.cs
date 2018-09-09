@@ -65,9 +65,9 @@ namespace DataAccess
         /// </summary>
         /// <param name="mappedProperties"></param>
         /// <returns></returns>
-        public SingleQuery<T> MapProperties(params MappedProperty<T>[] mappedProperties)
+        public SingleQuery<T> MapProperties(params MappedProperty[] mappedProperties)
         {
-            ((ITypeReader<T>)this).PropertyMap = new PropertyMap<T>(mappedProperties);
+            ((ITypeReader<T>)this).PropertyMap = new PropertyMap(mappedProperties);
 
             return this;
         }
@@ -81,18 +81,55 @@ namespace DataAccess
         /// <param name="reader"></param>
         /// <param name="configures"></param>
         /// <returns></returns>
-        public SingleQuery<T> MapProperties(params Action<MappedProperty<T>>[] configures)
+        public SingleQuery<T> MapProperties(params Action<MappedProperty>[] configures)
         {
             return MapProperties(configures
                 .Select(configure =>
                 {
-                    var mappedProperty = new MappedProperty<T>();
+                    var mappedProperty = new MappedProperty();
 
                     configure(mappedProperty);
 
                     return mappedProperty;
                 })
                 .ToArray()
+            );
+        }
+
+        /// <summary>
+        /// Maps the type of the item to be created to a code (number) retrieved from the query
+        /// to support polymorphic queries
+        /// </summary>
+        /// <param name="typeDiscriminatorIndex"></param>
+        /// <param name="mappedTypes"></param>
+        /// <returns></returns>
+        public SingleQuery<T> MapTypes(int typeDiscriminatorIndex, params MappedType[] mappedTypes)
+        {
+            ((ITypeReader<T>)this).TypeMap = new TypeMap(typeDiscriminatorIndex, mappedTypes);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Maps the type of the item to be created to a code (number) retrieved from the query
+        /// to support polymorphic queries
+        /// </summary>
+        /// <param name="typeDiscriminatorIndex"></param>
+        /// <param name="configures"></param>
+        /// <returns></returns>
+        public SingleQuery<T> MapTypes(int typeDiscriminatorIndex, params Action<MappedType>[] configures)
+        {
+            return MapTypes(typeDiscriminatorIndex,
+                configures
+                    .Select(configure =>
+                    {
+                        var mappedType = new MappedType();
+
+                        configure(mappedType);
+
+                        return (mappedType);
+                    })
+                    .ToArray()
             );
         }
 

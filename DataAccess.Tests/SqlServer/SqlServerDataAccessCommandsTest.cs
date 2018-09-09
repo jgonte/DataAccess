@@ -310,6 +310,209 @@ GO
             Assert.AreEqual(2, affectedRows);
         }
 
+        class PhoneNumber
+        {
+            public string AreaCode { get; set; }
+
+            public string Exchange { get; set; }
+
+            public string Number { get; set; }
+        }
+
+        class Person
+        {
+            public int PersonId { get; set; }
+
+            public string Name { get; set; }
+
+            public PhoneNumber CellPhone { get; set; }
+        }
+
+        [TestMethod()]
+        public void SqlServer_Execute_Commands_Nested_Properties_Test()
+        {
+            string connectionName = "SqlServerDataAccessTest.CommandsNestedPropertiesTest.ConnectionString";
+
+            // Test script executor (create database)
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+@"
+USE master
+GO
+
+IF EXISTS
+(
+    SELECT NAME
+    FROM Sys.Databases
+    WHERE Name = N'CommandsNestedPropertiesTest'
+)
+BEGIN
+    DROP DATABASE CommandsNestedPropertiesTest
+END
+GO
+
+CREATE DATABASE CommandsNestedPropertiesTest
+GO
+
+USE CommandsNestedPropertiesTest
+GO
+
+CREATE TABLE CommandsNestedPropertiesTest..Person(
+    PersonId INT NOT NULL,
+    Name VARCHAR(50),
+    CellPhone_AreaCode CHAR(3),
+    CellPhone_Exchange CHAR(3),
+    CellPhone_Number CHAR(4)
+)
+GO
+
+ALTER TABLE CommandsNestedPropertiesTest..Person
+ADD CONSTRAINT Person_PK PRIMARY KEY (PersonId)
+GO
+
+",
+            "^GO");
+
+            var r = Command
+                .NonQuery()
+                .Connection(connectionName)
+                .Text(
+@"INSERT INTO CommandsNestedPropertiesTest..Person 
+(
+    PersonId, 
+    Name, 
+    CellPhone_AreaCode,
+    CellPhone_Exchange,
+    CellPhone_Number
+) 
+VALUES
+(
+    @personId, 
+    @name,
+    @cellPhone_AreaCode,
+    @cellPhone_Exchange,
+    @cellPhone_Number
+)"
+                )
+                .Parameters(
+                    p => p.Name("personId").Value(1),
+                    p => p.Name("name").Value("Person 1"),
+                    p => p.Name("cellPhone_AreaCode").Value("111"),
+                    p => p.Name("cellPhone_Exchange").Value("222"),
+                    p => p.Name("cellPhone_Number").Value("3333")
+                 )
+                 .Execute();
+
+            int affectedRows = r.AffectedRows;
+
+            Assert.AreEqual(1, affectedRows);
+
+            r = Command
+                .NonQuery()
+                .Connection(connectionName)
+                .Text(
+@"INSERT INTO CommandsNestedPropertiesTest..Person 
+(
+    PersonId, 
+    Name, 
+    CellPhone_AreaCode,
+    CellPhone_Exchange,
+    CellPhone_Number
+) 
+VALUES
+(
+    @personId, 
+    @name,
+    @cellPhone_AreaCode,
+    @cellPhone_Exchange,
+    @cellPhone_Number
+)"
+                )
+                .Parameter("personId", 2)
+                .Parameter("name", "Person 2")
+                .Parameter("cellPhone_AreaCode", "444")
+                .Parameter("cellPhone_Exchange", "555")
+                .Parameter("cellPhone_Number", "6666")
+                .Execute();
+
+            affectedRows = r.AffectedRows;
+
+            Assert.AreEqual(1, affectedRows);
+
+            var response = Query<Person>
+                .Single()
+                .Connection(connectionName)
+                .Text(
+@"SELECT
+    PersonId AS [PersonId], 
+    Name AS [Name], 
+    CellPhone_AreaCode AS [CellPhone.AreaCode],
+    CellPhone_Exchange AS [CellPhone.Exchange],
+    CellPhone_Number AS [CellPhone.Number]
+FROM CommandsNestedPropertiesTest..Person 
+WHERE PersonId = @personId"
+                )
+                .Parameter("personId", 1)
+                .Execute();
+
+            Person person = response.Data;
+
+            Assert.AreEqual(1, person.PersonId);
+            Assert.AreEqual("Person 1", person.Name);
+            Assert.AreEqual("111", person.CellPhone.AreaCode);
+            Assert.AreEqual("222", person.CellPhone.Exchange);
+            Assert.AreEqual("3333", person.CellPhone.Number);
+
+            var collectionResponse = Query<Person>
+                .Collection()
+                .Connection(connectionName)
+                .Text(
+@"SELECT
+    PersonId AS [PersonId], 
+    Name AS [Name], 
+    CellPhone_AreaCode AS [CellPhone.AreaCode],
+    CellPhone_Exchange AS [CellPhone.Exchange],
+    CellPhone_Number AS [CellPhone.Number]
+FROM CommandsNestedPropertiesTest..Person"
+                )
+                .Execute();
+
+            IList<Person> people = collectionResponse.Data;
+
+            person = people[0];
+            Assert.AreEqual(1, person.PersonId);
+            Assert.AreEqual("Person 1", person.Name);
+            Assert.AreEqual("111", person.CellPhone.AreaCode);
+            Assert.AreEqual("222", person.CellPhone.Exchange);
+            Assert.AreEqual("3333", person.CellPhone.Number);
+
+            person = people[1];
+            Assert.AreEqual(2, person.PersonId);
+            Assert.AreEqual("Person 2", person.Name);
+            Assert.AreEqual("444", person.CellPhone.AreaCode);
+            Assert.AreEqual("555", person.CellPhone.Exchange);
+            Assert.AreEqual("6666", person.CellPhone.Number);
+
+            var cr = Command
+                .Scalar<int>()
+                .Connection(connectionName)
+                .Text("SELECT COUNT(*) FROM CommandsNestedPropertiesTest..Person")
+                .Execute();
+
+            int count = cr.Data;
+
+            Assert.AreEqual(2, count);
+
+            r = Command
+                .NonQuery()
+                .Connection(connectionName)
+                .Text("DELETE FROM CommandsNestedPropertiesTest..Person")
+                .Execute();
+
+            affectedRows = r.AffectedRows;
+
+            Assert.AreEqual(2, affectedRows);
+        }
+
         public class ObjectWithOptionalProperties
         {
             public string StringProperty { get; set; }

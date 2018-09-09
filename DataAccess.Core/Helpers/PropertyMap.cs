@@ -2,13 +2,13 @@
 
 namespace DataAccess
 {
-    public class PropertyMap<T>
+    public class PropertyMap
     {
         private IDictionary<string, int> _map = new Dictionary<string, int>();
 
         private HashSet<string> _ignored = new HashSet<string>();
 
-        public PropertyMap(MappedProperty<T>[] mappedProperties)
+        public PropertyMap(MappedProperty[] mappedProperties)
         {
             var i = 0;
 
@@ -29,14 +29,8 @@ namespace DataAccess
             }
         }
 
-        internal int GetIndex(string name)
-        {
-            return _map.ContainsKey(name) ? _map[name] : -1;
-        }
+        internal int GetIndex(string name) => _map.ContainsKey(name) ? _map[name] : -1;
 
-        internal bool IsIgnored(string propertyName)
-        {
-            return _ignored.Contains(propertyName);
-        }
+        internal bool IsIgnored(string propertyName) => _ignored.Contains(propertyName);
     }
 }

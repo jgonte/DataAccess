@@ -13,7 +13,9 @@ namespace DataAccess
 
         Action<DbDataReader, T> ITypeReader<T>.OnRecordRead { get; set; }
 
-        PropertyMap<T> ITypeReader<T>.PropertyMap { get; set; }
+        PropertyMap ITypeReader<T>.PropertyMap { get; set; }
+
+        TypeMap ITypeReader<T>.TypeMap { get; set; }
 
         public override int Read(DbDataReader reader)
         {
@@ -41,9 +43,9 @@ namespace DataAccess
         /// </summary>
         /// <param name="mappedProperties"></param>
         /// <returns></returns>
-        public ObjectResultSet<T> MapProperties(params MappedProperty<T>[] mappedProperties)
+        public ObjectResultSet<T> MapProperties(params MappedProperty[] mappedProperties)
         {
-            ((ITypeReader<T>)this).PropertyMap = new PropertyMap<T>(mappedProperties);
+            ((ITypeReader<T>)this).PropertyMap = new PropertyMap(mappedProperties);
 
             return this;
         }
@@ -57,12 +59,12 @@ namespace DataAccess
         /// <param name="reader"></param>
         /// <param name="configures"></param>
         /// <returns></returns>
-        public ObjectResultSet<T> MapProperties(params Action<MappedProperty<T>>[] configures)
+        public ObjectResultSet<T> MapProperties(params Action<MappedProperty>[] configures)
         {
             return MapProperties(configures
                 .Select(configure =>
                 {
-                    var mappedProperty = new MappedProperty<T>();
+                    var mappedProperty = new MappedProperty();
 
                     configure(mappedProperty);
 

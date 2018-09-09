@@ -39,18 +39,15 @@ namespace DataAccess
 
         internal static int ReadSingle<T>(this IObjectReader<T> reader, DbDataReader dbReader)
         {
-            if (dbReader.HasRows)
+            if (dbReader.Read())
             {
-                if (dbReader.Read())
-                {
-                    reader.Object = ReadObject<T>(reader, dbReader);
-                }
+                reader.Object = ReadObject(reader, dbReader);
+            }
 
-                if (dbReader.Read())
-                {
-                    throw new InvalidOperationException("Query returned more than one record");
-                }
-            };
+            if (dbReader.Read())
+            {
+                throw new InvalidOperationException("Query returned more than one record");
+            }
 
             return reader.Object == null ? 0 : 1;
         }
@@ -63,6 +60,10 @@ namespace DataAccess
             if (reader.Object != null) // Use an existing instance if any
             {
                 obj = reader.Object;
+            }
+            else if (reader.TypeMap != null)
+            {
+                obj = (T)reader.TypeMap.CreateObject(dbReader);
             }
             else
             {

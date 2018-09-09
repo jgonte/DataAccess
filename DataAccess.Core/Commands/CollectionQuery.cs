@@ -14,7 +14,7 @@ namespace DataAccess
     {
         IList<T> ICollectionReader<T>.Objects { get; set; }
 
-        TypeMap ICollectionReader<T>.TypeMap { get; set; }
+        TypeMap ITypeReader<T>.TypeMap { get; set; }
 
         public IList<T> Data => ((ICollectionReader<T>)this).Objects;
 
@@ -63,28 +63,14 @@ namespace DataAccess
         }
 
         /// <summary>
-        /// Maps the type of the item to be created to a code (number) retrieved from the query
-        /// to support polymorphic queries
-        /// </summary>
-        /// <param name="typeDiscriminatorIndex"></param>
-        /// <param name="mappedTypes"></param>
-        /// <returns></returns>
-        public CollectionQuery<T> MapTypes(int typeDiscriminatorIndex, params MappedType[] mappedTypes)
-        {
-            ((ICollectionReader<T>)this).TypeMap = new TypeMap(typeDiscriminatorIndex, mappedTypes);
-
-            return this;
-        }
-
-        /// <summary>
         /// Maps the name of the properties of the object(s) to be populated to the index of the columns returned
         /// by the database reader
         /// </summary>
         /// <param name="mappedProperties"></param>
         /// <returns></returns>
-        public CollectionQuery<T> MapProperties(params MappedProperty<T>[] mappedProperties)
+        public CollectionQuery<T> MapProperties(params MappedProperty[] mappedProperties)
         {
-            ((ITypeReader<T>)this).PropertyMap = new PropertyMap<T>(mappedProperties);
+            ((ITypeReader<T>)this).PropertyMap = new PropertyMap(mappedProperties);
 
             return this;
         }
@@ -98,12 +84,12 @@ namespace DataAccess
         /// <param name="reader"></param>
         /// <param name="configures"></param>
         /// <returns></returns>
-        public CollectionQuery<T> MapProperties(params Action<MappedProperty<T>>[] configures)
+        public CollectionQuery<T> MapProperties(params Action<MappedProperty>[] configures)
         {
             return MapProperties(configures
                 .Select(configure =>
                 {
-                    var mappedProperty = new MappedProperty<T>();
+                    var mappedProperty = new MappedProperty();
 
                     configure(mappedProperty);
 
@@ -111,6 +97,20 @@ namespace DataAccess
                 })
                 .ToArray()
             );
+        }
+
+        /// <summary>
+        /// Maps the type of the item to be created to a code (number) retrieved from the query
+        /// to support polymorphic queries
+        /// </summary>
+        /// <param name="typeDiscriminatorIndex"></param>
+        /// <param name="mappedTypes"></param>
+        /// <returns></returns>
+        public CollectionQuery<T> MapTypes(int typeDiscriminatorIndex, params MappedType[] mappedTypes)
+        {
+            ((ICollectionReader<T>)this).TypeMap = new TypeMap(typeDiscriminatorIndex, mappedTypes);
+
+            return this;
         }
 
         /// <summary>

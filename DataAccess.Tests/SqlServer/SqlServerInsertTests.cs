@@ -148,8 +148,8 @@ GO
                 )
                 .Instance(message)
                 .MapProperties(
-                    pm => pm.Map(m => m.MessageId),//.Index(0),
-                    pm => pm.Map(m => m.CreatedDateTime).Index(1)
+                    pm => pm.Map<Message>(m => m.MessageId),//.Index(0),
+                    pm => pm.Map<Message>(m => m.CreatedDateTime).Index(1)
                 )
                 .ExecuteAsync();
 
