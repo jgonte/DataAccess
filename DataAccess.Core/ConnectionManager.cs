@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using NetCoreHelpers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DataAccess
 {
@@ -13,16 +15,21 @@ namespace DataAccess
             // Load all the connections from the configuration
             Connections = new Dictionary<string, Connection>();
 
-            foreach (ConnectionStringSettings connectionSettings in ConfigurationManager.ConnectionStrings)
-            {
-                var connection = new Connection
-                {
-                    Name = connectionSettings.Name,
-                    ProviderName = connectionSettings.ProviderName,
-                    ConnectionString = connectionSettings.ConnectionString
-                };
+            var connections = ConfigurationHelper.GetConfiguration().GetSection("connections");
 
-                Connections.Add(connection.Name, connection);
+            if (!connections.Exists())
+            {
+                throw new System.InvalidOperationException("No connections were configured");
+            }
+
+            foreach (var connection in connections.GetChildren())
+            {
+                Connections.Add(connection.Key, new Connection
+                {
+                    Name = connection.Key,
+                    ProviderName = connection.GetChildren().Single(ch => ch.Key == "providerName").Value,
+                    ConnectionString = connection.GetChildren().Single(ch => ch.Key == "connectionString").Value
+                });
             }
         }
 
