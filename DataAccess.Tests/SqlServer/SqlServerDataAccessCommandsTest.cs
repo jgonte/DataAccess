@@ -62,7 +62,7 @@ namespace DataAccess.Tests
             string connectionName = "SqlServerDataAccessTest.CommandsTest.ConnectionString";
 
             // Test script executor (create database)
-            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO
@@ -189,7 +189,7 @@ GO
             string connectionName = "SqlServerDataAccessTest.CommandsAsyncTest.ConnectionString";
 
             // Test script executor (create database)
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO
@@ -334,7 +334,7 @@ GO
             string connectionName = "SqlServerDataAccessTest.CommandsNestedPropertiesTest.ConnectionString";
 
             // Test script executor (create database)
-            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

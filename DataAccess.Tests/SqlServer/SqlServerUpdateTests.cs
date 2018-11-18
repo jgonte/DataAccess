@@ -27,7 +27,7 @@ namespace DataAccess.Tests.SqlServer
             
 
             // Test script executor (create database)
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

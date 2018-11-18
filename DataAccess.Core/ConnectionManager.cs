@@ -15,7 +15,7 @@ namespace DataAccess
             // Load all the connections from the configuration
             Connections = new Dictionary<string, Connection>();
 
-            var connections = ConfigurationHelper.GetConfiguration().GetSection("connections");
+            var connections = ConfigurationHelper.GetConfiguration().GetSection("Connections");
 
             if (!connections.Exists())
             {
@@ -27,8 +27,8 @@ namespace DataAccess
                 Connections.Add(connection.Key, new Connection
                 {
                     Name = connection.Key,
-                    ProviderName = connection.GetChildren().Single(ch => ch.Key == "providerName").Value,
-                    ConnectionString = connection.GetChildren().Single(ch => ch.Key == "connectionString").Value
+                    ProviderName = connection.GetChildren().Single(ch => ch.Key == "ProviderName").Value,
+                    ConnectionString = connection.GetChildren().Single(ch => ch.Key == "ConnectionString").Value
                 });
             }
         }

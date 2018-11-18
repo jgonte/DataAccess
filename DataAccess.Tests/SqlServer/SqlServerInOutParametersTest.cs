@@ -61,7 +61,7 @@ namespace DataAccess.Tests
         public async Task SqlServer_In_Out_Parameters_Test()
         {
             // Test script executor (create database)
-            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

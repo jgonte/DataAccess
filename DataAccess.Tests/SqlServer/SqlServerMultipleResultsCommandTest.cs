@@ -65,7 +65,7 @@ namespace DataAccess.Tests
         [TestMethod()]
         public void SqlServer_Multiple_Results_Command_Execute_Test()
         {
-            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

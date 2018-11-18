@@ -27,7 +27,7 @@ namespace DataAccess.Tests.SqlServer
         public static async Task MyClassInitialize(TestContext testContext)
         {
             // Test script executor (create databases)
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO
@@ -63,7 +63,7 @@ GO
 ",
             "^GO");
 
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

@@ -126,7 +126,7 @@ namespace DataAccess.Tests
 
         private static void CreateDatabase()
         {
-            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("master"),
+            ScriptExecutor.ExecuteScript(ConnectionManager.GetConnection("Master"),
             @"
 USE master
 GO

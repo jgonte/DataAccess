@@ -61,7 +61,7 @@ namespace DataAccess.Tests
         [TestMethod()]
         public async Task SqlServerParametersPassingCommandExecuteTest()
         {
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO
@@ -147,7 +147,7 @@ GO
         [TestMethod()]
         public async Task SqlServerParametersPassingPrimitiveCommandExecuteTest()
         {
-            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("master"),
+            await ScriptExecutor.ExecuteScriptAsync(ConnectionManager.GetConnection("Master"),
 @"
 USE master
 GO

@@ -104,7 +104,7 @@ namespace DataAccess
 
         internal async Task<int> ExecuteCommandAsync(Context context = null)
         {
-            _onBeforeCommandExecuted?.Invoke(this); // Set any values before gnenerating the parameters
+            _onBeforeCommandExecuted?.Invoke(this); // Set any values before generating the parameters
 
             if (_autoGenerateParameters)
             {
