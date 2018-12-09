@@ -204,12 +204,14 @@ namespace DataAccess
             {
                 connection.ConnectionString = _connection.ConnectionString;
 
-                connection.Open();
+                await connection.OpenAsync();
 
                 var transaction = connection.BeginTransaction(GetLocalIsolationLevel());
 
                 try
                 {
+                    var tasks = new Queue<Task>();
+
                     foreach (Command command in _commands)
                     {
                         // Make sure the command has the database driver set
@@ -218,11 +220,15 @@ namespace DataAccess
                             command._driver = DatabaseDriverManager.Drivers[_connection.ProviderName];
                         }
 
-                        await command.ExecuteCommandAsync(new Context
-                        {
-                            Connection = connection,
-                            Transaction = transaction
-                        });
+                        tasks.Enqueue(
+                            command.ExecuteCommandAsync(new Context
+                            {
+                                Connection = connection,
+                                Transaction = transaction
+                            })
+                        );
+
+                        await Task.WhenAll(tasks);
                     }
 
                     transaction.Commit();

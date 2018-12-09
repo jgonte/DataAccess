@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Utilities;
 
 namespace DataAccess
@@ -173,6 +174,14 @@ namespace DataAccess
             where T : Command
         {
             command._onAfterCommandExecuted = onAfterCommandExecuted;
+
+            return command;
+        }
+
+        public static T OnAfterCommandExecutedAsync<T>(this T command, Func<Command, Task> onAfterCommandExecuted)
+            where T : Command
+        {
+            command._onAfterCommandExecutedAsync = onAfterCommandExecuted;
 
             return command;
         }
