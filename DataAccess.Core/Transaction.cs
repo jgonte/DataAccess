@@ -165,10 +165,14 @@ namespace DataAccess
 
                 var transaction = connection.BeginTransaction(GetLocalIsolationLevel());
 
+                Command executingCommand; // To quickly know what command is failing
+
                 try
                 {
                     foreach (Command command in _commands)
                     {
+                        executingCommand = command;
+
                         // Make sure the command has the database driver set
                         if (command._driver == null)
                         {
@@ -187,6 +191,8 @@ namespace DataAccess
                 catch
                 {
                     transaction.Rollback();
+
+                    //executingCommand // Check the executing command here
 
                     throw;
                 }
@@ -208,12 +214,16 @@ namespace DataAccess
 
                 var transaction = connection.BeginTransaction(GetLocalIsolationLevel());
 
+                Command executingCommand; // To quickly know what command is failing
+
                 try
                 {
                     var tasks = new Queue<Task>();
 
                     foreach (Command command in _commands)
                     {
+                        executingCommand = command;
+
                         // Make sure the command has the database driver set
                         if (command._driver == null)
                         {
@@ -236,6 +246,8 @@ namespace DataAccess
                 catch
                 {
                     transaction.Rollback();
+
+                    //executingCommand // Check the executing command here
 
                     throw;
                 }
