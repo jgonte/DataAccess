@@ -174,9 +174,9 @@ namespace DataAccess
                         executingCommand = command;
 
                         // Make sure the command has the database driver set
-                        if (command._driver == null)
+                        if (command.DatabaseDriver == null)
                         {
-                            command._driver = DatabaseDriverManager.Drivers[_connection.ProviderName];
+                            command.DatabaseDriver = DatabaseDriverManager.Drivers[_connection.ProviderName];
                         }
 
                         command.ExecuteCommand(new Context
@@ -225,9 +225,9 @@ namespace DataAccess
                         executingCommand = command;
 
                         // Make sure the command has the database driver set
-                        if (command._driver == null)
+                        if (command.DatabaseDriver == null)
                         {
-                            command._driver = DatabaseDriverManager.Drivers[_connection.ProviderName];
+                            command.DatabaseDriver = DatabaseDriverManager.Drivers[_connection.ProviderName];
                         }
 
                         tasks.Enqueue(

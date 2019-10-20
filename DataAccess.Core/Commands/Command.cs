@@ -18,7 +18,7 @@ namespace DataAccess
         /// <summary>
         /// The driver to perform database specific operations
         /// </summary>
-        internal DatabaseDriver _driver;
+        public DatabaseDriver DatabaseDriver { get; internal set; }
 
         internal Connection _connection;
 
@@ -228,7 +228,7 @@ namespace DataAccess
 
         private int ExecuteCommand(DbTransaction transaction, DbConnection connection)
         {
-            using (var command = connection.CreateCommand(_type, _text, Parameters, _timeout, _driver))
+            using (var command = connection.CreateCommand(_type, _text, Parameters, _timeout, DatabaseDriver))
             {
                 if (transaction != null)
                 {
@@ -268,7 +268,7 @@ namespace DataAccess
 
         private async Task<int> ExecuteCommandAsync(DbTransaction transaction, DbConnection connection)
         {
-            using (DbCommand command = connection.CreateCommand(_type, _text, Parameters, _timeout, _driver))
+            using (DbCommand command = connection.CreateCommand(_type, _text, Parameters, _timeout, DatabaseDriver))
             {
                 if (transaction != null)
                 {
@@ -320,7 +320,7 @@ namespace DataAccess
                 return;
             }
 
-            IDictionary<string, Parameter> parameters = Parameters.ToDictionary(p => _driver.ParameterPlaceHolder + p._name);
+            IDictionary<string, Parameter> parameters = Parameters.ToDictionary(p => DatabaseDriver.ParameterPlaceHolder + p._name);
 
             foreach (DbParameter parameter in command.Parameters)
             {

@@ -17,7 +17,7 @@ namespace DataAccess
         {
             command._connection = ConnectionManager.GetConnection(connectionName);
 
-            command._driver = driver != null ? driver : DatabaseDriverManager.Drivers[command._connection.ProviderName];
+            command.DatabaseDriver = driver != null ? driver : DatabaseDriverManager.Drivers[command._connection.ProviderName];
 
             return command;
         }
@@ -31,7 +31,7 @@ namespace DataAccess
                 ProviderName = providerName
             };
 
-            command._driver = driver != null ? driver : DatabaseDriverManager.Drivers[command._connection.ProviderName];
+            command.DatabaseDriver = driver != null ? driver : DatabaseDriverManager.Drivers[command._connection.ProviderName];
 
             return command;
         }
