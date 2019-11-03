@@ -24,7 +24,7 @@ namespace DataAccess
                     _connection = connection,
                     _type = CommandType.Text,
                     _text = script,
-                    _driver = DatabaseDriverManager.Drivers[connection.ProviderName]
+                    DatabaseDriver = DatabaseDriverManager.Drivers[connection.ProviderName]
                 }
                 .Execute(null);
             }
@@ -44,7 +44,7 @@ namespace DataAccess
                         _connection = connection,
                         _type = CommandType.Text,
                         _text = sql,
-                        _driver = DatabaseDriverManager.Drivers[connection.ProviderName]
+                        DatabaseDriver = DatabaseDriverManager.Drivers[connection.ProviderName]
                     }
                     .Execute(null);
                 }
@@ -66,7 +66,7 @@ namespace DataAccess
                     _connection = connection,
                     _type = CommandType.Text,
                     _text = script,
-                    _driver = DatabaseDriverManager.Drivers[connection.ProviderName]
+                    DatabaseDriver = DatabaseDriverManager.Drivers[connection.ProviderName]
                 }
                 .ExecuteAsync(null);
             }
@@ -86,7 +86,7 @@ namespace DataAccess
                         _connection = connection,
                         _type = CommandType.Text,
                         _text = sql,
-                        _driver = DatabaseDriverManager.Drivers[connection.ProviderName]
+                        DatabaseDriver = DatabaseDriverManager.Drivers[connection.ProviderName]
                     }
                     .ExecuteAsync(null);
                 }

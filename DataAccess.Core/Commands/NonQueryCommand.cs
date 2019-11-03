@@ -16,7 +16,9 @@ namespace DataAccess
 
             return new Response<EmptyType>
             {
-                AffectedRows = AffectedRows
+                AffectedRows = AffectedRows,
+
+                Parameters = Parameters
             };
         }
 
@@ -26,7 +28,9 @@ namespace DataAccess
 
             return new Response<EmptyType>
             {
-                AffectedRows = AffectedRows
+                AffectedRows = AffectedRows,
+
+                Parameters = Parameters
             };
         }
 

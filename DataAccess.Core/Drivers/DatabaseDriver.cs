@@ -2,6 +2,9 @@
 
 namespace DataAccess
 {
+    /// <summary>
+    /// Deals with the database vendor differences
+    /// </summary>
     public abstract class DatabaseDriver
     {
         /// <summary>

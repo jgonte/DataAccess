@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace DataAccess
 {
-    class SqlServerDatabaseDriver : DatabaseDriver
+    public class SqlServerDatabaseDriver : DatabaseDriver
     {
         public override string ParameterPlaceHolder
         {

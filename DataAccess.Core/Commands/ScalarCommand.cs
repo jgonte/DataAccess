@@ -17,7 +17,9 @@ namespace DataAccess
 
             return new Response<T>
             {
-                Data = ReturnValue
+                Data = ReturnValue,
+
+                Parameters = Parameters
             };
         }
 
@@ -27,7 +29,9 @@ namespace DataAccess
 
             return new Response<T>
             {
-                Data = ReturnValue
+                Data = ReturnValue,
+
+                Parameters = Parameters
             };
         }
 

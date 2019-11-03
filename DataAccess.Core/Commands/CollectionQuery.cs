@@ -26,7 +26,9 @@ namespace DataAccess
             {
                 ReturnCode = ReturnCode,
 
-                Data = Data
+                Data = Data,
+
+                Parameters = Parameters
             };
         }
 
@@ -38,7 +40,9 @@ namespace DataAccess
             {
                 ReturnCode = ReturnCode,
 
-                Data = Data
+                Data = Data,
+
+                Parameters = Parameters
             };
         }
 
