@@ -38,22 +38,26 @@ namespace DataAccess
 
         private static void ReadProperties(DbDataReader reader, PropertyMap propertyMap, object obj, string previousPropertyName)
         {
-            var ta = obj.GetTypeAccessor();
+            var typeAccessor = obj.GetTypeAccessor();
 
-            foreach (var pa in ta.PropertyAccessors.Values.Where(pa => !pa.PropertyType.IsCollection()))
+            var propertyAccessors = typeAccessor
+                .PropertyAccessors.Values
+                .Where(pa => !pa.PropertyType.IsCollection());
+
+            foreach (var propertyAccessor in propertyAccessors)
             {
                 var propertyName = string.IsNullOrWhiteSpace(previousPropertyName) ? 
-                    pa.PropertyName : 
-                    $"{previousPropertyName}.{pa.PropertyName}";
+                    propertyAccessor.PropertyName : 
+                    $"{previousPropertyName}.{propertyAccessor.PropertyName}";
 
                 if (propertyMap.IsIgnored(propertyName))
                 {
                     continue; // Do nothing
                 }
 
-                if (pa.IsPrimitive)
+                if (propertyAccessor.IsPrimitive)
                 {
-                    if (pa.CanSet) // Can set the value in the property of the object
+                    if (propertyAccessor.CanSet) // Can set the value in the property of the object
                     {
                         var i = propertyMap.GetIndex(propertyName);
 
@@ -64,16 +68,16 @@ namespace DataAccess
 
                         object value = reader.IsDBNull(i) ? null : reader[i];
 
-                        pa.SetValue(obj, value);
+                        propertyAccessor.SetValue(obj, value);
                     }
                 }
                 else // Nested property
                 {
-                    var o = pa.PropertyType.CreateInstance();
+                    var o = propertyAccessor.PropertyType.CreateInstance();
 
                     ReadProperties(reader, propertyMap, o, propertyName);
 
-                    pa.SetValue(obj, o);
+                    propertyAccessor.SetValue(obj, o);
                 }
             }
         }
