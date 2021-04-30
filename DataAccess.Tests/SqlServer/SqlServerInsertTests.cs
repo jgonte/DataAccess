@@ -14,7 +14,7 @@ namespace DataAccess.Tests.SqlServer
 
             public string Text { get; set; }
 
-            public DateTime CreatedDateTime { get; set; }
+            public DateTimeOffset CreatedDateTime { get; set; }
         }
 
         internal static string connectionName = "SqlServerDataAccessTest.InsertAsyncTest.ConnectionString";

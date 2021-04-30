@@ -65,8 +65,6 @@ namespace DataAccess
         /// </summary>
         internal Action<Command> _onAfterCommandExecuted;
 
-        internal Func<Command, Task> _onAfterCommandExecutedAsync;
-
         /// <summary>
         /// Executes a command
         /// </summary>
@@ -300,9 +298,9 @@ namespace DataAccess
                     ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
                 }
 
-                if (_onAfterCommandExecutedAsync != null)
+                if (_onAfterCommandExecuted != null)
                 {
-                    await _onAfterCommandExecutedAsync(this);
+                    _onAfterCommandExecuted(this);
                 }
 
                 return rc;
