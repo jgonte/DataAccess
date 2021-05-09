@@ -615,20 +615,20 @@ FROM CommandsNestedPropertiesTest..Person"
     'StringValue',
     'C',
     CONVERT(bit, 1),
-    1,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL
+    CONVERT(tinyint, 1),
+    CONVERT(tinyint, 1),
+    CONVERT(smallint, 1),
+    CONVERT(smallint, 1),
+    CONVERT(int, 1),
+    CONVERT(int, 1),
+    CONVERT(bigint, 1),
+    CONVERT(bigint, 1),
+    CONVERT(real, 1.5),
+    CONVERT(float, 1.5),
+    CONVERT(money, 1.5),
+    CONVERT(uniqueidentifier , 'd9d2b034-86db-4d04-abd0-4c14c897585d'),
+    CONVERT(datetime , '1928-05-14'),
+    1
 "
                 )
                 .OnRecordRead((reader, obj) =>
@@ -642,7 +642,7 @@ FROM CommandsNestedPropertiesTest..Person"
                     obj.UnsignedShortProperty = reader.GetUnsignedInt16OrNull(6);
                     obj.IntProperty = reader.GetInt32OrNull(7);
                     obj.UnsignedIntProperty = reader.GetUnsignedInt32OrNull(8);
-                    obj.LongProperty = reader.GetInt16OrNull(9);
+                    obj.LongProperty = reader.GetInt64OrNull(9);
                     obj.UnsignedLongProperty = reader.GetUnsignedInt64OrNull(10);
                     obj.FloatProperty = reader.GetFloatOrNull(11);
                     obj.DoubleProperty = reader.GetDoubleOrNull(12);
@@ -658,20 +658,20 @@ FROM CommandsNestedPropertiesTest..Person"
             Assert.AreEqual("StringValue", objectWithProperties.StringProperty);
             Assert.AreEqual('C', objectWithProperties.CharProperty);
             Assert.AreEqual(true, objectWithProperties.BooleanProperty);
-            Assert.AreEqual(0, objectWithProperties.ByteProperty);
-            Assert.AreEqual(0, objectWithProperties.SignedByteProperty);
-            Assert.AreEqual(0, objectWithProperties.ShortProperty);
-            Assert.AreEqual(0, objectWithProperties.UnsignedShortProperty);
-            Assert.AreEqual(0, objectWithProperties.IntProperty);
-            Assert.AreEqual(0, objectWithProperties.UnsignedIntProperty);
-            Assert.AreEqual(0, objectWithProperties.LongProperty);
-            Assert.AreEqual(0, objectWithProperties.UnsignedLongProperty);
-            Assert.AreEqual(0, objectWithProperties.FloatProperty);
-            Assert.AreEqual(0, objectWithProperties.DoubleProperty);
-            Assert.AreEqual(0, objectWithProperties.DecimalProperty);
-            Assert.AreEqual(0, objectWithProperties.GuidProperty);
-            Assert.AreEqual(0, objectWithProperties.DateTimeProperty);
-            Assert.AreEqual(0, objectWithProperties.ObjectProperty); 
+            Assert.AreEqual((byte)1, objectWithProperties.ByteProperty);
+            Assert.AreEqual((sbyte)1, objectWithProperties.SignedByteProperty);
+            Assert.AreEqual((short)1, objectWithProperties.ShortProperty);
+            Assert.AreEqual((ushort)1, objectWithProperties.UnsignedShortProperty);
+            Assert.AreEqual(1, objectWithProperties.IntProperty);
+            Assert.AreEqual((uint)1, objectWithProperties.UnsignedIntProperty);
+            Assert.AreEqual((long)1, objectWithProperties.LongProperty);
+            Assert.AreEqual((ulong)1, objectWithProperties.UnsignedLongProperty);
+            Assert.AreEqual((float)1.5, objectWithProperties.FloatProperty);
+            Assert.AreEqual((double)1.5, objectWithProperties.DoubleProperty);
+            Assert.AreEqual((decimal)1.5, objectWithProperties.DecimalProperty);
+            Assert.AreEqual(Guid.Parse("d9d2b034-86db-4d04-abd0-4c14c897585d"), objectWithProperties.GuidProperty);
+            Assert.AreEqual(new DateTime(1928, 5, 14), objectWithProperties.DateTimeProperty);
+            Assert.AreEqual(1, objectWithProperties.ObjectProperty); 
         }
     }
 }
