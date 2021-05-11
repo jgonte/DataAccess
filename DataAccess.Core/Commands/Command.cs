@@ -51,6 +51,11 @@ namespace DataAccess
         public List<Parameter> Parameters { get; internal set; } = new List<Parameter>();
 
         /// <summary>
+        /// Maps the output parameters to the properties of the entity
+        /// </summary>
+        public List<OutputParameterMap> OutputParameterMaps { get; internal set; } = new List<OutputParameterMap>();
+
+        /// <summary>
         /// The timeout in seconds
         /// </summary>
         internal int? _timeout;
@@ -64,6 +69,11 @@ namespace DataAccess
         /// Action to execute when the command has been executed
         /// </summary>
         internal Action<Command> _onAfterCommandExecuted;
+
+        /// <summary>
+        /// The instance of the entity to populate the parameters from or pass values to from the output parameters using the map
+        /// </summary>
+        public object Entity { get; set; }
 
         /// <summary>
         /// Executes a command
@@ -165,8 +175,8 @@ namespace DataAccess
                 {
                     Parameters.Add(new Parameter
                     {
-                        _name = pa.PropertyName.ToCamelCase(),
-                        _value = pa.GetValue(_qbeObject)
+                        Name = pa.PropertyName.ToCamelCase(),
+                        Value = pa.GetValue(_qbeObject)
                     });
                 }
             }
@@ -228,37 +238,13 @@ namespace DataAccess
         {
             using (var command = connection.CreateCommand(_type, _text, Parameters, _timeout, DatabaseDriver))
             {
-                if (transaction != null)
-                {
-                    command.Transaction = transaction;
-                }
-
-                DbParameter returnParameter = null;
-
                 var useReturnValue = command.CommandType == CommandType.StoredProcedure;
 
-                if (useReturnValue)
-                {
-                    // Create a parameter to store the return code
-                    returnParameter = command.CreateParameter();
-
-                    returnParameter.Direction = ParameterDirection.ReturnValue;
-
-                    returnParameter.DbType = DbType.Int32;
-
-                    command.Parameters.Add(returnParameter);
-                }
+                var returnParameter = BeforeExecuteCommand(transaction, command, useReturnValue);
 
                 var rc = OnExecute(command);
 
-                CopyOutParametersValue(command);
-
-                if (useReturnValue)
-                {
-                    ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
-                }
-
-                _onAfterCommandExecuted?.Invoke(this);
+                AfterExecuteCommand(command, useReturnValue, returnParameter);
 
                 return rc;
             }
@@ -268,44 +254,81 @@ namespace DataAccess
         {
             using (DbCommand command = connection.CreateCommand(_type, _text, Parameters, _timeout, DatabaseDriver))
             {
-                if (transaction != null)
-                {
-                    command.Transaction = transaction;
-                }
+                var useReturnValue = command.CommandType == CommandType.StoredProcedure;
 
-                DbParameter returnParameter = null;
-
-                bool useReturnValue = command.CommandType == CommandType.StoredProcedure;
-
-                if (useReturnValue)
-                {
-                    // Create a parameter to store the return code
-                    returnParameter = command.CreateParameter();
-
-                    returnParameter.Direction = ParameterDirection.ReturnValue;
-
-                    returnParameter.DbType = DbType.Int32;
-
-                    command.Parameters.Add(returnParameter);
-                }
+                var returnParameter = BeforeExecuteCommand(transaction, command, useReturnValue);
 
                 int rc = await OnExecuteAsync(command);
 
-                CopyOutParametersValue(command);
-
-                if (useReturnValue)
-                {
-                    ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
-                }
-
-                if (_onAfterCommandExecuted != null)
-                {
-                    _onAfterCommandExecuted(this);
-                }
+                AfterExecuteCommand(command, useReturnValue, returnParameter);
 
                 return rc;
             }
         }
+
+        private static DbParameter BeforeExecuteCommand(DbTransaction transaction, DbCommand command, bool useReturnValue)
+        {
+            if (transaction != null)
+            {
+                command.Transaction = transaction;
+            }
+
+            DbParameter returnParameter = null;
+
+            if (useReturnValue)
+            {
+                // Create a parameter to store the return code
+                returnParameter = command.CreateParameter();
+
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+
+                returnParameter.DbType = DbType.Int32;
+
+                command.Parameters.Add(returnParameter);
+            }
+
+            return returnParameter;
+        }
+
+        private void AfterExecuteCommand(DbCommand command, bool useReturnValue, DbParameter returnParameter)
+        {
+            CopyOutParametersValue(command);
+
+            if (useReturnValue)
+            {
+                ReturnCode = returnParameter.Value != null ? (int)returnParameter.Value : 0;
+            }
+
+            if (OutputParameterMaps.Any())
+            {
+                if (Entity == null)
+                {
+                    throw new InvalidOperationException("Entity cannot be null if output parameter maps are configured");
+                }
+
+                var accessor = Entity.GetTypeAccessor();
+
+                foreach (var outputParameterMap in OutputParameterMaps)
+                {
+                    var parameter = Parameters.Where(p => p.Name == outputParameterMap.Name).SingleOrDefault();
+
+                    if (parameter == null)
+                    {
+                        throw new InvalidOperationException($"Output parameter of name: {outputParameterMap.Name} was not found");
+                    }
+
+                    if (!parameter.IsOutput && !parameter.IsInputOutput)
+                    {
+                        throw new InvalidOperationException($"Output parameter of name: {outputParameterMap.Name} is neither input nor input-output");
+                    }
+
+                    accessor.SetValue(Entity, outputParameterMap.Property, parameter.Value);
+                }
+            }
+
+            _onAfterCommandExecuted?.Invoke(this);
+        }
+
 
         /// <summary>
         /// Copies the values of the parameters that are not input only to the database independent parameters of this command
@@ -318,16 +341,16 @@ namespace DataAccess
                 return;
             }
 
-            IDictionary<string, Parameter> parameters = Parameters.ToDictionary(p => DatabaseDriver.ParameterPlaceHolder + p._name);
+            IDictionary<string, Parameter> parameters = Parameters.ToDictionary(p => DatabaseDriver.ParameterPlaceHolder + p.Name);
 
             foreach (DbParameter parameter in command.Parameters)
             {
                 if (parameter.Direction != ParameterDirection.Input
                     && parameter.Direction != ParameterDirection.ReturnValue)
                 {
-                    string name = parameter.ParameterName;
+                    var name = parameter.ParameterName;
 
-                    parameters[name]._value = parameter.Value;
+                    parameters[name].Value = parameter.Value;
                 }
             }
         }

@@ -2,6 +2,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace DataAccess.Tests
 {
@@ -111,9 +112,9 @@ END
                 .Connection(connectionName)
                 .StoredProcedure("TestInOutParameters")
                 .Parameters(
-                    p => p.Name("outParameter").Value(1).Output(),
-                    p => p.Name("inOutParameter").Size(50).InputOutput(),
-                    p => p.Name("outGuidParameter").Value(Guid.Empty).Output()
+                    p => p.Name("outParameter").Value(1).IsOutput(),
+                    p => p.Name("inOutParameter").Size(50).IsInputOutput(),
+                    p => p.Name("outGuidParameter").Value(Guid.Empty).IsOutput()
                  );
 
             await cmd.ExecuteAsync();

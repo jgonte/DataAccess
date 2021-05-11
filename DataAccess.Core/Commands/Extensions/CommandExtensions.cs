@@ -7,7 +7,7 @@ using Utilities;
 
 namespace DataAccess
 {
-    public static class DatabaseCommandExtensions
+    public static class CommandExtensions
     {
         #region Fluent methods
 
@@ -68,9 +68,9 @@ namespace DataAccess
         {
             command.Parameters.Add(new Parameter
             {
-                _name = name,
-                _value = value,
-                _size = size
+                Name = name,
+                Value = value,
+                Size = size
             });
 
             return command;
@@ -97,6 +97,21 @@ namespace DataAccess
                     return parameter;
                 })
                 .ToArray());
+        }
+
+        /// <summary>
+        /// The instance to populate the parameters from or the output parameters to
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="command"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static T Entity<T>(this T command, object entity)
+            where T : Command
+        {
+            command.Entity = entity;
+
+            return command;
         }
 
         /// <summary>
@@ -153,12 +168,49 @@ namespace DataAccess
 
             command.Parameters.Add(new Parameter
             {
-                _name = name,
-                _type = (int)SqlDbType.Structured,
-                _value = table
+                Name = name,
+                SqlType = (int)SqlDbType.Structured,
+                Value = table
             });
 
             return command;
+        }
+
+        /// <summary>
+        /// Configures the output parameter maps to map the output parameters to the properties of the entity
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="command"></param>
+        /// <param name="databaseParameters"></param>
+        /// <returns></returns>
+        public static T MapOutputParameters<T>(this T command, params OutputParameterMap[] databaseParameters)
+            where T : Command
+        {
+            command.OutputParameterMaps.AddRange(databaseParameters);
+
+            return command;
+        }
+
+        /// <summary>
+        /// Configures the output parameter maps to map the output parameters to the properties of the entity
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="command"></param>
+        /// <param name="configures"></param>
+        /// <returns></returns>
+        public static T MapOutputParameters<T>(this T command, params Action<OutputParameterMap>[] configures)
+            where T : Command
+        {
+            return MapOutputParameters(command, configures
+                .Select(configure =>
+                {
+                    var parameterMap = new OutputParameterMap();
+
+                    configure(parameterMap);
+
+                    return parameterMap;
+                })
+                .ToArray());
         }
 
         public static T OnBeforeCommandExecuted<T>(this T command, Action<Command> onBeforeCommandExecuted)

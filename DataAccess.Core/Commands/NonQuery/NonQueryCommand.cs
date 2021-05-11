@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace DataAccess
@@ -9,6 +10,8 @@ namespace DataAccess
     public class NonQueryCommand : Command
     {
         public int AffectedRows { get; private set; }
+
+        public bool ThrowWhenNoRecordIsUpdated { get; set; } = true;
 
         public Response<EmptyType> Execute(Context context = null)
         {
@@ -24,7 +27,7 @@ namespace DataAccess
 
         public async Task<Response<EmptyType>> ExecuteAsync(Context context = null)
         {
-            await ExecuteCommandAsync(context);
+            await ExecuteCommandAsync(context);           
 
             return new Response<EmptyType>
             {
@@ -38,12 +41,22 @@ namespace DataAccess
         {
             AffectedRows = command.ExecuteNonQuery();
 
+            if (AffectedRows == 0 && ThrowWhenNoRecordIsUpdated)
+            {
+                throw new InvalidOperationException("No record was updated");
+            }
+
             return AffectedRows;
         }
 
         protected override async Task<int> OnExecuteAsync(DbCommand command)
         {
             AffectedRows = await command.ExecuteNonQueryAsync();
+
+            if (AffectedRows == 0 && ThrowWhenNoRecordIsUpdated)
+            {
+                throw new InvalidOperationException("No record was updated");
+            }
 
             return AffectedRows;
         }

@@ -30,7 +30,7 @@ namespace DataAccess
         /// </summary>
         public List<Parameter> Parameters { get; set; }
 
-        public Parameter GetParameter(string name) => Parameters.SingleOrDefault(p => p._name == name);
+        public Parameter GetParameter(string name) => Parameters.SingleOrDefault(p => p.Name == name);
         
     }
 }

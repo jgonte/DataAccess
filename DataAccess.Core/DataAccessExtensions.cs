@@ -47,11 +47,11 @@ namespace DataAccess
                 foreach (var parameter in parameters)
                 {
                     command.AddParameter(
-                        driver.ParameterPlaceHolder + parameter._name,
-                        parameter._value,
-                        parameter._size,
-                        parameter._direction,
-                        parameter._type,
+                        driver.ParameterPlaceHolder + parameter.Name,
+                        parameter.Value,
+                        parameter.Size,
+                        parameter.Direction,
+                        parameter.SqlType,
                         driver);
                 }
             }

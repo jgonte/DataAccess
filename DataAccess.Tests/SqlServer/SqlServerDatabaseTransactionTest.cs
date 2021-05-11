@@ -215,7 +215,8 @@ GO
             var command = Command
                 .NonQuery() // Withdraw 300 from the checking account
                 .Text("UPDATE LocalTransactionTest..CheckingAccount SET Amount = Amount - 300 WHERE AccountId = @accountId")
-                .Parameter("accountId", 2); // It does not exist
+                .Parameter("accountId", 2) // It does not exist
+                .ThrowWhenNoRecordIsUpdated(false); // Because the account does not exist the records affected will be zero and if we do not set this, an exception will be thrown 
 
             await Transaction
                 .Local()

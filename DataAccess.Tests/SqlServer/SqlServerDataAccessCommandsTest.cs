@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Utilities;
 
 namespace DataAccess.Tests
 {
@@ -102,7 +103,7 @@ GO
                 .Connection(connectionName)
                 .Text("INSERT INTO CommandsTest..Message (MessageId, Text) VALUES(@messageId, @text)")
                 .Parameters(
-                    p => p.Name("messageId").Value(1),
+                    p => p.Set("messageId", 1),
                     p => p.Name("text").Value("Message 1")
                  )
                  .Execute();
