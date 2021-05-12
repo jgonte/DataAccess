@@ -136,7 +136,7 @@ GO
                 })
                 .Execute();
 
-            Message message = response.Data;
+            var message = response.Record;
 
             Assert.AreEqual(2, message.MessageId);
             Assert.AreEqual("Message 2", message.Text);
@@ -153,7 +153,7 @@ GO
                 })
                 .Execute();
 
-            IList<Message> messages = messagesResponse.Data;
+            var messages = messagesResponse.Records;
 
             message = messages[0];
             Assert.AreEqual(1, message.MessageId);
@@ -169,7 +169,7 @@ GO
                 .Text("SELECT COUNT(*) FROM CommandsTest..Message")
                 .Execute();
 
-            int count = cr.Data;
+            int count = cr.ReturnValue;
 
             Assert.AreEqual(2, count);
 
@@ -251,7 +251,7 @@ GO
 
             Assert.AreEqual(1, affectedRows);
 
-            Response<Message> response = await Query<Message>
+            var response = await Query<Message>
                 .Single()
                 .Connection(connectionName)
                 .Text("SELECT Text FROM CommandsAsyncTest..Message WHERE MessageId = @messageId")
@@ -263,7 +263,7 @@ GO
                 })
                 .ExecuteAsync();
 
-            Message message = response.Data;
+            Message message = response.Record;
 
             Assert.AreEqual(2, message.MessageId);
             Assert.AreEqual("Message 2", message.Text);
@@ -280,7 +280,7 @@ GO
                 })
                 .ExecuteAsync();
 
-            IList<Message> messages = messagesResponse.Data;
+            var messages = messagesResponse.Records;
 
             message = messages[0];
             Assert.AreEqual(1, message.MessageId);
@@ -296,7 +296,7 @@ GO
                 .Text("SELECT COUNT(*) FROM CommandsAsyncTest..Message")
                 .ExecuteAsync();
 
-            int count = cr.Data;
+            int count = cr.ReturnValue;
 
             Assert.AreEqual(2, count);
 
@@ -455,7 +455,7 @@ WHERE PersonId = @personId"
                 .Parameter("personId", 1)
                 .Execute();
 
-            Person person = response.Data;
+            var person = response.Record;
 
             Assert.AreEqual(1, person.PersonId);
             Assert.AreEqual("Person 1", person.Name);
@@ -477,7 +477,7 @@ FROM CommandsNestedPropertiesTest..Person"
                 )
                 .Execute();
 
-            IList<Person> people = collectionResponse.Data;
+            var people = collectionResponse.Records;
 
             person = people[0];
             Assert.AreEqual(1, person.PersonId);
@@ -499,7 +499,7 @@ FROM CommandsNestedPropertiesTest..Person"
                 .Text("SELECT COUNT(*) FROM CommandsNestedPropertiesTest..Person")
                 .Execute();
 
-            int count = cr.Data;
+            int count = cr.ReturnValue;
 
             Assert.AreEqual(2, count);
 
@@ -588,7 +588,7 @@ FROM CommandsNestedPropertiesTest..Person"
                 })
                 .Execute();
 
-            ObjectWithOptionalProperties objectWithNullProperties = response.Data;
+            ObjectWithOptionalProperties objectWithNullProperties = response.Record;
 
             Assert.IsNull(objectWithNullProperties.StringProperty);
             Assert.IsNull(objectWithNullProperties.CharProperty);
@@ -654,7 +654,7 @@ FROM CommandsNestedPropertiesTest..Person"
                 })
                 .Execute();
 
-            ObjectWithOptionalProperties objectWithProperties = response.Data;
+            ObjectWithOptionalProperties objectWithProperties = response.Record;
 
             Assert.AreEqual("StringValue", objectWithProperties.StringProperty);
             Assert.AreEqual('C', objectWithProperties.CharProperty);

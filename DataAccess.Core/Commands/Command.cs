@@ -13,7 +13,7 @@ namespace DataAccess
     /// </summary>
     public abstract class Command
     {
-        public int ReturnCode { get; set; }
+        public int ReturnCode { get; internal set; }
 
         /// <summary>
         /// The driver to perform database specific operations
@@ -42,7 +42,7 @@ namespace DataAccess
         /// <summary>
         /// The Query By Example object from which the parameters are generated
         /// </summary>
-        internal object _qbeObject;
+        //internal object _qbeObject;
 
         /// <summary>
         /// The parameters to use
@@ -73,7 +73,7 @@ namespace DataAccess
         /// <summary>
         /// The instance of the entity to populate the parameters from or pass values to from the output parameters using the map
         /// </summary>
-        public object Entity { get; set; }
+        public object Record { get; internal set; }
 
         /// <summary>
         /// Executes a command
@@ -160,7 +160,12 @@ namespace DataAccess
         /// </summary>
         private void GenerateParameters()
         {
-            var ta = _qbeObject.GetTypeAccessor();
+            if (Record == null)
+            {
+                throw new InvalidOperationException("Entity cannot be null if auto generated parameters are configured");
+            }
+
+            var ta = Record.GetTypeAccessor();
 
             if (_excludedPropertiesInParametersGeneration == null)
             {
@@ -176,7 +181,7 @@ namespace DataAccess
                     Parameters.Add(new Parameter
                     {
                         Name = pa.PropertyName.ToCamelCase(),
-                        Value = pa.GetValue(_qbeObject)
+                        Value = pa.GetValue(Record)
                     });
                 }
             }
@@ -301,12 +306,12 @@ namespace DataAccess
 
             if (OutputParameterMaps.Any())
             {
-                if (Entity == null)
+                if (Record == null)
                 {
                     throw new InvalidOperationException("Entity cannot be null if output parameter maps are configured");
                 }
 
-                var accessor = Entity.GetTypeAccessor();
+                var accessor = Record.GetTypeAccessor();
 
                 foreach (var outputParameterMap in OutputParameterMaps)
                 {
@@ -322,7 +327,7 @@ namespace DataAccess
                         throw new InvalidOperationException($"Output parameter of name: {outputParameterMap.Name} is neither input nor input-output");
                     }
 
-                    accessor.SetValue(Entity, outputParameterMap.Property, parameter.Value);
+                    accessor.SetValue(Record, outputParameterMap.Property, parameter.Value);
                 }
             }
 

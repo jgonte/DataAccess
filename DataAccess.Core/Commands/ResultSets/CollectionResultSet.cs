@@ -8,9 +8,9 @@ namespace DataAccess
     public class CollectionResultSet<T> : ResultSet,
         ICollectionReader<T>
     {
-        IList<T> ICollectionReader<T>.Objects { get; set; }
+        IList<T> ICollectionReader<T>.Records { get; set; }
 
-        public IList<T> Data => ((ICollectionReader<T>)this).Objects;
+        public IList<T> Data => ((ICollectionReader<T>)this).Records;
 
         TypeMap ITypeReader<T>.TypeMap { get; set; }
 

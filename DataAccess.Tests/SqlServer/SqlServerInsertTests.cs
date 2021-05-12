@@ -139,8 +139,8 @@ GO
                 //.Parameters(
                 //    p => p.Name("text").Value(message.Text)
                 //)
+                .Record(message)
                 .AutoGenerateParameters( // Parameters can be generated dynamically from a query by example object
-                    qbeObject: message,
                     excludedProperties: new Expression<Func<Message, object>>[]{
                         m => m.MessageId,
                         m => m.CreatedDateTime

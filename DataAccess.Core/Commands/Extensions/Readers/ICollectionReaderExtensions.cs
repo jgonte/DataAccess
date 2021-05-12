@@ -15,16 +15,16 @@ namespace DataAccess
         public static T Instances<T, U>(this T reader, IList<U> items)
             where T : ICollectionReader<U>
         {
-            reader.Objects = items;
+            reader.Records = items;
 
             return reader;
         }
 
         internal static int ReadCollection<T>(this ICollectionReader<T> reader, DbDataReader dbReader)
         {
-            if (reader.Objects == null)
+            if (reader.Records == null)
             {
-                reader.Objects = new List<T>();
+                reader.Records = new List<T>();
             }
 
             if (dbReader.HasRows)
@@ -35,13 +35,13 @@ namespace DataAccess
                 {
                     var obj = ReadObject(reader, dbReader, i++);
 
-                    if (reader.Objects.ElementAtOrDefault(i) == null)
+                    if (reader.Records.ElementAtOrDefault(i) == null)
                     {
-                        reader.Objects.Add(obj); // Add the object to the list if it not already exists
+                        reader.Records.Add(obj); // Add the object to the list if it not already exists
                     }
                 }
 
-                return reader.Objects.Count;
+                return reader.Records.Count;
             }
 
             return 0;
@@ -52,9 +52,9 @@ namespace DataAccess
             // Retrieve an existin item or create a new one
             T obj = default(T);
 
-            if (reader.Objects.ElementAtOrDefault(index) != null) // Use an existing item if any
+            if (reader.Records.ElementAtOrDefault(index) != null) // Use an existing item if any
             {
-                obj = reader.Objects.ElementAt(index);
+                obj = reader.Records.ElementAt(index);
             }
             else if (reader.TypeMap != null)
             {

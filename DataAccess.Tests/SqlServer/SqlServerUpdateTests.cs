@@ -172,7 +172,7 @@ VALUES
                 // Properties mapped automatically by default
                 .ExecuteAsync();
 
-            Assert.IsNull(result.Data);
+            Assert.IsNull(result.Record);
         }
 
         [TestMethod]
@@ -217,7 +217,7 @@ VALUES
                 // Properties mapped automatically by default
                 .ExecuteAsync();
 
-            var msg = result.Data;
+            var msg = result.Record;
 
             Assert.AreEqual("Updated message text", msg.Text);
 

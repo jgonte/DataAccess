@@ -13,27 +13,27 @@ namespace DataAccess
 
         public bool ThrowWhenNoRecordIsUpdated { get; set; } = true;
 
-        public Response<EmptyType> Execute(Context context = null)
+        public NonQueryResponse Execute(Context context = null)
         {
             ExecuteCommand(context);
 
-            return new Response<EmptyType>
+            return new NonQueryResponse
             {
-                AffectedRows = AffectedRows,
-
-                Parameters = Parameters
+                ReturnCode = ReturnCode,
+                Parameters = Parameters,
+                AffectedRows = AffectedRows
             };
         }
 
-        public async Task<Response<EmptyType>> ExecuteAsync(Context context = null)
+        public async Task<NonQueryResponse> ExecuteAsync(Context context = null)
         {
             await ExecuteCommandAsync(context);           
 
-            return new Response<EmptyType>
+            return new NonQueryResponse
             {
-                AffectedRows = AffectedRows,
-
-                Parameters = Parameters
+                ReturnCode = ReturnCode,
+                Parameters = Parameters,
+                AffectedRows = AffectedRows
             };
         }
 

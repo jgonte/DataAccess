@@ -12,43 +12,45 @@ namespace DataAccess
     public class CollectionQuery<T> : Query<T>,
         ICollectionReader<T>
     {
-        IList<T> ICollectionReader<T>.Objects { get; set; }
-
         TypeMap ITypeReader<T>.TypeMap { get; set; }
 
-        public IList<T> Data => ((ICollectionReader<T>)this).Objects;
-
-        public Response<IList<T>> Execute(Context context = null)
-        {
-            ExecuteCommand(context);
-
-            return new Response<IList<T>>
-            {
-                ReturnCode = ReturnCode,
-
-                Data = Data,
-
-                Parameters = Parameters
-            };
-        }
-
-        public async Task<Response<IList<T>>> ExecuteAsync(Context context = null)
-        {
-            await ExecuteCommandAsync(context);
-
-            return new Response<IList<T>>
-            {
-                ReturnCode = ReturnCode,
-
-                Data = Data,
-
-                Parameters = Parameters
-            };
-        }
+        IList<T> ICollectionReader<T>.Records { get; set; }
 
         public override int Read(DbDataReader reader)
         {
             return this.ReadCollection(reader);
+        }
+
+        public CollectionQueryResponse<T> Execute(Context context = null)
+        {
+            ExecuteCommand(context);
+
+            return CreateResponse();
+        }
+
+        public async Task<CollectionQueryResponse<T>> ExecuteAsync(Context context = null)
+        {
+            await ExecuteCommandAsync(context);
+
+            return CreateResponse();
+        }
+
+        private CollectionQueryResponse<T> CreateResponse()
+        {
+            return new CollectionQueryResponse<T>
+            {
+                ReturnCode = ReturnCode,
+                Parameters = Parameters,
+                Records = ((ICollectionReader<T>)this).Records,
+                Count = GetCount(Parameters, ((ICollectionReader<T>)this).Records)
+            };
+        }
+
+        private int GetCount(List<Parameter> parameters, IList<T> records)
+        {
+            var countParameter = parameters.Where(p => p.Name == "count").SingleOrDefault();
+
+            return countParameter != null ? (int)countParameter.Value : records.Count;
         }
 
         #region Fluent methods that cannot be intuitively extended since the compiler cannot infer types from constraints

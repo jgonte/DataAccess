@@ -137,7 +137,7 @@ GO
                 })
                 .ExecuteAsync();
 
-            IList<Developer> devs = response.Data;
+            var devs = response.Records;
 
             Assert.AreEqual(3, devs.Count);
             Assert.AreEqual(1, devs[0].Id);
@@ -203,7 +203,7 @@ GO
                 })
                 .ExecuteAsync();
 
-            IList<Developer> devs = response.Data;
+            var devs = response.Records;
 
             Assert.AreEqual(3, devs.Count);
             Assert.AreEqual("Gonzalo", devs[2].Name);

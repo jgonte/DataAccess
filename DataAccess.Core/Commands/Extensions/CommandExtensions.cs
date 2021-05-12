@@ -104,12 +104,12 @@ namespace DataAccess
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="command"></param>
-        /// <param name="entity"></param>
+        /// <param name="record"></param>
         /// <returns></returns>
-        public static T Entity<T>(this T command, object entity)
+        public static T Record<T>(this T command, object record)
             where T : Command
         {
-            command.Entity = entity;
+            command.Record = record;
 
             return command;
         }
@@ -120,22 +120,19 @@ namespace DataAccess
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="command"></param>
-        /// <param name="qbeObject">The object to generate the parameters from</param>
         /// <param name="excludedProperties">The properties that will be excluded from the parameter generation</param>
         /// <returns></returns>
-        public static T AutoGenerateParameters<T>(this T command, object qbeObject, string[] excludedProperties = null)
+        public static T AutoGenerateParameters<T>(this T command, string[] excludedProperties = null)
             where T : Command
         {
             command._autoGenerateParameters = true;
-
-            command._qbeObject = qbeObject ?? new ArgumentNullException(nameof(qbeObject));
 
             command._excludedPropertiesInParametersGeneration = excludedProperties;
 
             return command;
         }
 
-        public static T AutoGenerateParameters<T, U>(this T command, U qbeObject, Expression<Func<U, object>>[] excludedProperties = null)
+        public static T AutoGenerateParameters<T, U>(this T command, Expression<Func<U, object>>[] excludedProperties = null)
             where T : Command
         {
             var excludedProps = new List<string>();
@@ -148,7 +145,7 @@ namespace DataAccess
                 }
             }
 
-            return AutoGenerateParameters(command, qbeObject, excludedProps.ToArray());
+            return AutoGenerateParameters(command, excludedProps.ToArray());
         }
 
         /// <summary>

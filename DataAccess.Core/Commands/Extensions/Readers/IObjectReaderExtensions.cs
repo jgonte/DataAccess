@@ -14,7 +14,7 @@ namespace DataAccess
         public static T Instance<T, U>(this T or, U obj)
             where T : IObjectReader<U>
         {
-            or.Object = obj;
+            or.Record = obj;
 
             return or;
         }
@@ -40,7 +40,7 @@ namespace DataAccess
         {
             if (dbReader.Read())
             {
-                reader.Object = ReadObject(reader, dbReader);
+                reader.Record = ReadObject(reader, dbReader);
             }
 
             if (dbReader.Read())
@@ -48,7 +48,7 @@ namespace DataAccess
                 throw new InvalidOperationException("Query returned more than one record");
             }
 
-            return reader.Object == null ? 0 : 1;
+            return reader.Record == null ? 0 : 1;
         }
 
         private static T ReadObject<T>(IObjectReader<T> reader, DbDataReader dbReader)
@@ -56,9 +56,9 @@ namespace DataAccess
             // Retrieve an existin item or create a new one
             T obj = default(T);
 
-            if (reader.Object != null) // Use an existing instance if any
+            if (reader.Record != null) // Use an existing instance if any
             {
-                obj = reader.Object;
+                obj = reader.Record;
             }
             else if (reader.TypeMap != null)
             {

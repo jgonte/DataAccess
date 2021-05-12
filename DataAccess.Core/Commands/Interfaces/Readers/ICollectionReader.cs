@@ -3,14 +3,14 @@
 namespace DataAccess
 {
     /// <summary>
-    /// Defines a type that populates a collection of strong typed items
+    /// Defines a type that populates a collection of strong typed records
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface ICollectionReader<T> : ITypeReader<T>
     {
         /// <summary>
-        /// The objects populated by this reader
+        /// The objects read by this reader
         /// </summary>
-        IList<T> Objects { get; set; }
+        IList<T> Records { get; set; }
     }
 }

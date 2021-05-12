@@ -141,9 +141,9 @@ GO
                     account.Amount = reader.GetDecimal(0);
                 });
 
-            await checkingCommand.ExecuteAsync();
+            var response = await checkingCommand.ExecuteAsync();
 
-            Account checking = checkingCommand.Data;
+            Account checking = response.Record;
 
             Assert.AreEqual(1, cmd1.AffectedRows);
 
@@ -160,9 +160,9 @@ GO
                     account.Amount = reader.GetDecimal(0);
                 });
 
-            await savingCommand.ExecuteAsync();
+            response = await savingCommand.ExecuteAsync();
 
-            Account saving = savingCommand.Data;
+            Account saving = response.Record;
 
             Assert.AreEqual(800m, saving.Amount);
 
@@ -196,15 +196,15 @@ GO
 
             Assert.IsTrue(failed);
 
-            var response = await checkingCommand.ExecuteAsync();
+            response = await checkingCommand.ExecuteAsync();
 
-            checking = response.Data;
+            checking = response.Record;
 
             Assert.AreEqual(700m, checking.Amount);
 
             response = await savingCommand.ExecuteAsync();
 
-            saving = response.Data;
+            saving = response.Record;
 
             Assert.AreEqual(800m, saving.Amount);
         }

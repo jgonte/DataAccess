@@ -11,27 +11,27 @@ namespace DataAccess
     {
         public T ReturnValue { get; private set; }
 
-        public Response<T> Execute(Context context = null)
+        public ScalarResponse<T> Execute(Context context = null)
         {
             ExecuteCommand(context);
 
-            return new Response<T>
+            return new ScalarResponse<T>
             {
-                Data = ReturnValue,
-
-                Parameters = Parameters
+                ReturnCode = ReturnCode,
+                Parameters = Parameters,
+                ReturnValue = ReturnValue           
             };
         }
 
-        public async Task<Response<T>> ExecuteAsync(Context context = null)
+        public async Task<ScalarResponse<T>> ExecuteAsync(Context context = null)
         {
             await ExecuteCommandAsync(context);
 
-            return new Response<T>
+            return new ScalarResponse<T>
             {
-                Data = ReturnValue,
-
-                Parameters = Parameters
+                ReturnCode = ReturnCode,
+                Parameters = Parameters,
+                ReturnValue = ReturnValue
             };
         }
 

@@ -45,7 +45,7 @@ namespace DataAccess.Tests
                 .Text("SELECT COUNT(1) FROM Person")                         
                 .ExecuteAsync();
 
-            if (cr.Data == 0)
+            if (cr.ReturnValue == 0)
             {
                 // Employees
                 await Command
@@ -656,9 +656,9 @@ GO
             TestQueryResults(response);
         }
 
-        private static void TestQueryResults(Response<IList<Person>> response)
+        private static void TestQueryResults(CollectionQueryResponse<Person> response)
         {
-            IList<Person> people = response.Data;
+            IList<Person> people = response.Records;
 
             Assert.AreEqual(9, people.Count());
 
@@ -725,7 +725,7 @@ GO
                 )
                 .ExecuteAsync();
 
-            var person = response.Data;
+            var person = response.Record;
 
             var customer = (Customer)person;
 

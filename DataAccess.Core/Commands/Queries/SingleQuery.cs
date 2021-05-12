@@ -11,35 +11,29 @@ namespace DataAccess
     public class SingleQuery<T> : Query<T>,
         IObjectReader<T>
     {
-        T IObjectReader<T>.Object { get; set; }
+        T IObjectReader<T>.Record { get; set; }
 
-        public T Data => ((IObjectReader<T>)this).Object;
-
-        public Response<T> Execute(Context context = null)
+        public SingleQueryResponse<T> Execute(Context context = null)
         {
             ExecuteCommand(context);
 
-            return new Response<T>
+            return new SingleQueryResponse<T>
             {
                 ReturnCode = ReturnCode,
-
-                Data = Data,
-
-                Parameters = Parameters
+                Parameters = Parameters,
+                Record = ((IObjectReader<T>)this).Record
             };
         }
 
-        public async Task<Response<T>> ExecuteAsync(Context context = null)
+        public async Task<SingleQueryResponse<T>> ExecuteAsync(Context context = null)
         {
             await ExecuteCommandAsync(context);
 
-            return new Response<T>
+            return new SingleQueryResponse<T>
             {
                 ReturnCode = ReturnCode,
-
-                Data = Data,
-
-                Parameters = Parameters
+                Parameters = Parameters,
+                Record = ((IObjectReader<T>)this).Record
             };
         }
 

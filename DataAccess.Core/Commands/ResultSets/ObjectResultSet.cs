@@ -7,9 +7,9 @@ namespace DataAccess
     public class ObjectResultSet<T> : ResultSet,
         IObjectReader<T>
     {
-        T IObjectReader<T>.Object { get; set; }
+        T IObjectReader<T>.Record { get; set; }
 
-        public T Data => ((IObjectReader<T>)this).Object;
+        public T Data => ((IObjectReader<T>)this).Record;
 
         Action<DbDataReader, T> ITypeReader<T>.OnRecordRead { get; set; }
 
