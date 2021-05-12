@@ -196,7 +196,7 @@ VALUES
                 //{
                 //    message.UpdatedDateTime = reader.GetDateTime(0);
                 //})
-                .Instance(message)
+                .RecordInstance(message)
                 .MapProperties(
                     pm => pm.Map<Message>(m => m.UpdatedDateTime)//.Index(0)
                 )
@@ -241,7 +241,7 @@ VALUES
                     p => p.Name("messageId").Value(message.MessageId),
                     p => p.Name("text").Value(message.Text)
                  )
-                .Instance(message)
+                .RecordInstance(message)
                 .MapProperties(
                     pm => pm.Map<Message>(m => m.UpdatedDateTime)//.Index(0)
                 )

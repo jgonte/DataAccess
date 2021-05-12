@@ -136,14 +136,14 @@ GO
                 .Collection()
                 .Connection(connectionName1)
                 .Text("SELECT StringField1 FROM PopulateCollectionsSource1..Data")
-                .Instances(dataObjects)
+                .RecordInstances(dataObjects)
                 .ExecuteAsync();
 
             await Query<DataObject>
                 .Collection()
                 .Connection(connectionName2)
                 .Text("SELECT StringField2 FROM PopulateCollectionsSource2..Data")
-                .Instances(dataObjects)
+                .RecordInstances(dataObjects)
                 .ExecuteAsync();
 
             var dataObject = dataObjects[0];

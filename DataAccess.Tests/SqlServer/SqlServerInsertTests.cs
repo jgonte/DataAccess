@@ -139,14 +139,14 @@ GO
                 //.Parameters(
                 //    p => p.Name("text").Value(message.Text)
                 //)
-                .Record(message)
+                .RecordInstance(message)
                 .AutoGenerateParameters( // Parameters can be generated dynamically from a query by example object
                     excludedProperties: new Expression<Func<Message, object>>[]{
                         m => m.MessageId,
                         m => m.CreatedDateTime
                     }
                 )
-                .Instance(message)
+                .RecordInstance(message)
                 .MapProperties(
                     pm => pm.Map<Message>(m => m.MessageId),//.Index(0),
                     pm => pm.Map<Message>(m => m.CreatedDateTime).Index(1)

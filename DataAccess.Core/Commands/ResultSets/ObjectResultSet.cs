@@ -7,15 +7,16 @@ namespace DataAccess
     public class ObjectResultSet<T> : ResultSet,
         IObjectReader<T>
     {
-        T IObjectReader<T>.Record { get; set; }
+        object IRecordInstanceHolder.RecordInstance { get; set; }
 
-        public T Data => ((IObjectReader<T>)this).Record;
+        public T Data => (T)((IObjectReader<T>)this).RecordInstance;
 
         Action<DbDataReader, T> ITypeReader<T>.OnRecordRead { get; set; }
 
         PropertyMap ITypeReader<T>.PropertyMap { get; set; }
 
         TypeMap ITypeReader<T>.TypeMap { get; set; }
+        
 
         public override int Read(DbDataReader reader)
         {

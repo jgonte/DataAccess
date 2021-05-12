@@ -12,19 +12,19 @@ namespace DataAccess
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static T Instances<T, U>(this T reader, IList<U> items)
+        public static T RecordInstances<T, U>(this T reader, IList<U> items)
             where T : ICollectionReader<U>
         {
-            reader.Records = items;
+            reader.RecordInstances = items;
 
             return reader;
         }
 
         internal static int ReadCollection<T>(this ICollectionReader<T> reader, DbDataReader dbReader)
         {
-            if (reader.Records == null)
+            if (reader.RecordInstances == null)
             {
-                reader.Records = new List<T>();
+                reader.RecordInstances = new List<T>();
             }
 
             if (dbReader.HasRows)
@@ -35,13 +35,13 @@ namespace DataAccess
                 {
                     var obj = ReadObject(reader, dbReader, i++);
 
-                    if (reader.Records.ElementAtOrDefault(i) == null)
+                    if (reader.RecordInstances.ElementAtOrDefault(i) == null)
                     {
-                        reader.Records.Add(obj); // Add the object to the list if it not already exists
+                        reader.RecordInstances.Add(obj); // Add the object to the list if it not already exists
                     }
                 }
 
-                return reader.Records.Count;
+                return reader.RecordInstances.Count;
             }
 
             return 0;
@@ -52,9 +52,9 @@ namespace DataAccess
             // Retrieve an existin item or create a new one
             T obj = default(T);
 
-            if (reader.Records.ElementAtOrDefault(index) != null) // Use an existing item if any
+            if (reader.RecordInstances.ElementAtOrDefault(index) != null) // Use an existing item if any
             {
-                obj = reader.Records.ElementAt(index);
+                obj = reader.RecordInstances.ElementAt(index);
             }
             else if (reader.TypeMap != null)
             {

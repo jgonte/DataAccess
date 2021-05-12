@@ -11,6 +11,6 @@ namespace DataAccess
         /// <summary>
         /// The objects read by this reader
         /// </summary>
-        IList<T> Records { get; set; }
+        IList<T> RecordInstances { get; set; }
     }
 }

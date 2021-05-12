@@ -14,7 +14,7 @@ namespace DataAccess
     {
         TypeMap ITypeReader<T>.TypeMap { get; set; }
 
-        IList<T> ICollectionReader<T>.Records { get; set; }
+        IList<T> ICollectionReader<T>.RecordInstances { get; set; }
 
         public override int Read(DbDataReader reader)
         {
@@ -41,8 +41,8 @@ namespace DataAccess
             {
                 ReturnCode = ReturnCode,
                 Parameters = Parameters,
-                Records = ((ICollectionReader<T>)this).Records,
-                Count = GetCount(Parameters, ((ICollectionReader<T>)this).Records)
+                Records = ((ICollectionReader<T>)this).RecordInstances,
+                Count = GetCount(Parameters, ((ICollectionReader<T>)this).RecordInstances)
             };
         }
 

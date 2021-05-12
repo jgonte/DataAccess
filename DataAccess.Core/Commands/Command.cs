@@ -11,7 +11,7 @@ namespace DataAccess
     /// <summary>
     /// Database agnostic command
     /// </summary>
-    public abstract class Command
+    public abstract class Command: IRecordInstanceHolder
     {
         public int ReturnCode { get; internal set; }
 
@@ -38,11 +38,6 @@ namespace DataAccess
         /// The properties to exclude during the generation of the parameters
         /// </summary>
         internal string[] _excludedPropertiesInParametersGeneration;
-
-        /// <summary>
-        /// The Query By Example object from which the parameters are generated
-        /// </summary>
-        //internal object _qbeObject;
 
         /// <summary>
         /// The parameters to use
@@ -73,7 +68,7 @@ namespace DataAccess
         /// <summary>
         /// The instance of the entity to populate the parameters from or pass values to from the output parameters using the map
         /// </summary>
-        public object Record { get; internal set; }
+        public object RecordInstance { get; set; }
 
         /// <summary>
         /// Executes a command
@@ -160,12 +155,12 @@ namespace DataAccess
         /// </summary>
         private void GenerateParameters()
         {
-            if (Record == null)
+            if (RecordInstance == null)
             {
                 throw new InvalidOperationException("Entity cannot be null if auto generated parameters are configured");
             }
 
-            var ta = Record.GetTypeAccessor();
+            var ta = RecordInstance.GetTypeAccessor();
 
             if (_excludedPropertiesInParametersGeneration == null)
             {
@@ -181,7 +176,7 @@ namespace DataAccess
                     Parameters.Add(new Parameter
                     {
                         Name = pa.PropertyName.ToCamelCase(),
-                        Value = pa.GetValue(Record)
+                        Value = pa.GetValue(RecordInstance)
                     });
                 }
             }
@@ -306,12 +301,12 @@ namespace DataAccess
 
             if (OutputParameterMaps.Any())
             {
-                if (Record == null)
+                if (RecordInstance == null)
                 {
                     throw new InvalidOperationException("Entity cannot be null if output parameter maps are configured");
                 }
 
-                var accessor = Record.GetTypeAccessor();
+                var accessor = RecordInstance.GetTypeAccessor();
 
                 foreach (var outputParameterMap in OutputParameterMaps)
                 {
@@ -327,7 +322,7 @@ namespace DataAccess
                         throw new InvalidOperationException($"Output parameter of name: {outputParameterMap.Name} is neither input nor input-output");
                     }
 
-                    accessor.SetValue(Record, outputParameterMap.Property, parameter.Value);
+                    accessor.SetValue(RecordInstance, outputParameterMap.Property, parameter.Value);
                 }
             }
 

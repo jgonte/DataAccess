@@ -11,7 +11,7 @@ namespace DataAccess
     public class SingleQuery<T> : Query<T>,
         IObjectReader<T>
     {
-        T IObjectReader<T>.Record { get; set; }
+        
 
         public SingleQueryResponse<T> Execute(Context context = null)
         {
@@ -21,7 +21,7 @@ namespace DataAccess
             {
                 ReturnCode = ReturnCode,
                 Parameters = Parameters,
-                Record = ((IObjectReader<T>)this).Record
+                Record = (T)((IObjectReader<T>)this).RecordInstance
             };
         }
 
@@ -33,7 +33,7 @@ namespace DataAccess
             {
                 ReturnCode = ReturnCode,
                 Parameters = Parameters,
-                Record = ((IObjectReader<T>)this).Record
+                Record = (T)((IObjectReader<T>)this).RecordInstance
             };
         }
 

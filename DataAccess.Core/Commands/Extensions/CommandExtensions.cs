@@ -104,12 +104,12 @@ namespace DataAccess
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="command"></param>
-        /// <param name="record"></param>
+        /// <param name="recordInstance"></param>
         /// <returns></returns>
-        public static T Record<T>(this T command, object record)
+        public static T RecordInstance<T>(this T command, object recordInstance)
             where T : Command
         {
-            command.Record = record;
+            command.RecordInstance = recordInstance;
 
             return command;
         }

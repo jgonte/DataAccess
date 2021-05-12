@@ -237,7 +237,7 @@ GO
                         .Parameters(
                             p => p.Name("name").Value(school.Name)
                         )
-                        .Instance(school)
+                        .RecordInstance(school)
                         .MapProperties(
                             pm => pm.Map<School>(s => s.Id)//.Index(0)
                         ),
@@ -248,7 +248,7 @@ GO
                         .Parameters(
                             p => p.Name("streetAddress").Value(address.StreetAddress)
                         )
-                        .Instance(address)
+                        .RecordInstance(address)
                         .MapProperties(
                             pm => pm.Map<Address>(a => a.Id)//.Index(0)
                         )
