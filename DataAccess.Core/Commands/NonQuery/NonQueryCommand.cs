@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccess
@@ -17,6 +18,8 @@ namespace DataAccess
         {
             ExecuteCommand(context);
 
+            EnsureDatabaseWasUpdated();
+
             return new NonQueryResponse
             {
                 ReturnCode = ReturnCode,
@@ -27,7 +30,9 @@ namespace DataAccess
 
         public async Task<NonQueryResponse> ExecuteAsync(Context context = null)
         {
-            await ExecuteCommandAsync(context);           
+            await ExecuteCommandAsync(context);
+
+            EnsureDatabaseWasUpdated();
 
             return new NonQueryResponse
             {
@@ -41,11 +46,6 @@ namespace DataAccess
         {
             AffectedRows = command.ExecuteNonQuery();
 
-            if (AffectedRows == 0 && ThrowWhenNoRecordIsUpdated)
-            {
-                throw new InvalidOperationException("No record was updated");
-            }
-
             return AffectedRows;
         }
 
@@ -53,12 +53,23 @@ namespace DataAccess
         {
             AffectedRows = await command.ExecuteNonQueryAsync();
 
+            return AffectedRows;
+        }
+
+        private void EnsureDatabaseWasUpdated()
+        {
             if (AffectedRows == 0 && ThrowWhenNoRecordIsUpdated)
             {
-                throw new InvalidOperationException("No record was updated");
-            }
+                var rowVersionParameter = Parameters.Where(p => p.Name == "rowVersion").SingleOrDefault();
 
-            return AffectedRows;
+                if (rowVersionParameter != null &&
+                    rowVersionParameter.Value == DBNull.Value)
+                {
+                    throw new DbConcurrencyException();
+                }
+
+                throw new DbNoUpdatedException();
+            }
         }
     }
 }
