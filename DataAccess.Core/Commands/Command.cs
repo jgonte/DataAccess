@@ -322,7 +322,12 @@ namespace DataAccess
                         throw new InvalidOperationException($"Output parameter of name: {outputParameterMap.Name} is neither input nor input-output");
                     }
 
-                    accessor.SetValue(RecordInstance, outputParameterMap.Property, parameter.Value);
+                    var value = accessor.GetValue(RecordInstance, outputParameterMap.Property);
+
+                    if (value.IsDefault()) // Do not overwrite if set
+                    {
+                        accessor.SetValue(RecordInstance, outputParameterMap.Property, parameter.Value);
+                    }             
                 }
             }
 
