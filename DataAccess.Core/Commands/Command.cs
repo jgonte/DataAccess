@@ -324,10 +324,7 @@ namespace DataAccess
 
                     var value = accessor.GetValue(RecordInstance, outputParameterMap.Property);
 
-                    if (value.IsDefault()) // Do not overwrite if set
-                    {
-                        accessor.SetValue(RecordInstance, outputParameterMap.Property, parameter.Value);
-                    }             
+                    accessor.SetValue(RecordInstance, outputParameterMap.Property, parameter.Value);
                 }
             }
 
