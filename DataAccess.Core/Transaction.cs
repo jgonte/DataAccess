@@ -220,7 +220,7 @@ namespace DataAccess
                 {
                     var tasks = new Queue<Task>();
 
-                    foreach (var command in commands)
+                    foreach (var command in _commands)
                     {
                         executingCommand = command;
 
