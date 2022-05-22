@@ -72,26 +72,26 @@ IF EXISTS
 (
     SELECT NAME
     FROM Sys.Databases
-    WHERE Name = N'CommandsTest'
+    WHERE Name = N'CommandsTest1'
 )
 BEGIN
-    DROP DATABASE CommandsTest
+    DROP DATABASE CommandsTest1
 END
 GO
 
-CREATE DATABASE CommandsTest
+CREATE DATABASE CommandsTest1
 GO
 
-USE CommandsTest
+USE CommandsTest1
 GO
 
-CREATE TABLE CommandsTest..Message(
+CREATE TABLE CommandsTest1..Message(
     MessageId INT NOT NULL,
     Text VARCHAR(50)
 )
 GO
 
-ALTER TABLE CommandsTest..Message
+ALTER TABLE CommandsTest1..Message
 ADD CONSTRAINT Message_PK PRIMARY KEY (MessageId)
 GO
 
@@ -101,7 +101,7 @@ GO
             var r = Command
                 .NonQuery()
                 .Connection(connectionName)
-                .Text("INSERT INTO CommandsTest..Message (MessageId, Text) VALUES(@messageId, @text)")
+                .Text("INSERT INTO CommandsTest1..Message (MessageId, Text) VALUES(@messageId, @text)")
                 .Parameters(
                     p => p.Set("messageId", 1),
                     p => p.Name("text").Value("Message 1")
@@ -115,7 +115,7 @@ GO
             r = Command
                 .NonQuery()
                 .Connection(connectionName)
-                .Text("INSERT INTO CommandsTest..Message (MessageId, Text) VALUES(@messageId, @text)")
+                .Text("INSERT INTO CommandsTest1..Message (MessageId, Text) VALUES(@messageId, @text)")
                 .Parameter("messageId", 2)
                 .Parameter("text", "Message 2")
                 .Execute();
@@ -127,7 +127,7 @@ GO
             var response = Query<Message>
                 .Single()
                 .Connection(connectionName)
-                .Text("SELECT Text FROM CommandsTest..Message WHERE MessageId = @messageId")
+                .Text("SELECT Text FROM CommandsTest1..Message WHERE MessageId = @messageId")
                 .Parameter("messageId", 2)
                 .OnRecordRead((reader, msg) =>
                 {
@@ -144,7 +144,7 @@ GO
             var messagesResponse = Query<Message>
                 .Collection()
                 .Connection(connectionName)
-                .Text("SELECT MessageId, Text FROM CommandsTest..Message")
+                .Text("SELECT MessageId, Text FROM CommandsTest1..Message")
                 .Parameter("messageId", 2)
                 .OnRecordRead((reader, msg) =>
                 {
@@ -166,7 +166,7 @@ GO
             var cr = Command
                 .Scalar<int>()
                 .Connection(connectionName)
-                .Text("SELECT COUNT(*) FROM CommandsTest..Message")
+                .Text("SELECT COUNT(*) FROM CommandsTest1..Message")
                 .Execute();
 
             int count = cr.ReturnValue;
@@ -176,7 +176,7 @@ GO
             r = Command
                 .NonQuery()
                 .Connection(connectionName)
-                .Text("DELETE FROM CommandsTest..Message")
+                .Text("DELETE FROM CommandsTest1..Message")
                 .Execute();
 
             affectedRows = r.AffectedRows;
