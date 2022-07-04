@@ -218,8 +218,6 @@ namespace DataAccess
 
                 try
                 {
-                    var tasks = new Queue<Task>();
-
                     foreach (var command in _commands)
                     {
                         executingCommand = command;
@@ -229,6 +227,8 @@ namespace DataAccess
                         {
                             command.DatabaseDriver = DatabaseDriverManager.Drivers[_connection.ProviderName];
                         }
+
+                        var tasks = new Queue<Task>();
 
                         tasks.Enqueue(
                             command.ExecuteCommandAsync(new Context
